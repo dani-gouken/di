@@ -1,7 +1,7 @@
 {
     "name": "phpatom/di",
     "description": "An expressive and flexible dependency injection container for PHP",
-    "keywords": ["atom", "di","dependency injection","container","dependency injection container","framework","ioc","inversion of control"],
+    "keywords": ["atom", "di","dependency injection","container","dependency injection container","framework","ioc","inversion of control","psr-11"],
     "license": "MIT",
     "type": "library",
     "require": {
