@@ -30,10 +30,6 @@
 - [Acknowledgments](#acknowledgement)
 
 
-## 🏁 Getting Started <a name = "getting_started"></a>
-
-
-
 ### Prerequisites
 
 
@@ -51,7 +47,7 @@ composer require phpatom/di
 ```
 
 
-## 🔧 Running the tests <a name = "tests"></a>
+##Testing
  
 ```
 composer test
@@ -59,17 +55,45 @@ composer test
 
 ### Coding style
 
-Explain what these tests test and why
-
 ```
 ./vendor/bin/phpcs
 ```
 
-## 🎈 Usage <a name="usage"></a>
+## Getting Started <a name = "getting_started"></a>
+```php
+//instantiate the container
+$dic = new Atom\DI\DIC();
+//it implement psr container inteface
+var_dump($dic instance of psr\container\ContainerInterface); //true    
+
+//store values in the container
+$dic->factories()->store(
+    MyServiceInterface::class, 
+    $dic->as()->instanceOf(MyService::class)
+    ->withParameter("servicekey",$dic->as()->get("servicekey"))
+    ->resolved(function($key){
+        return "mysuper"  + $key;
+    })
+);
+$dic->values()->store("serviceKey",$dic->as()->value("myservicekey"));
+
+//build your object
+$service = $dic->get(MyServiceInterface::class);
+var_dump($service instanceof MyServiceInterface)); //true
+echo $service->getServiceKey() //mysuperservicekey
+```
+
+## Usage <a name="usage"></a>
 
 ...
 
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+
 ## ✍️ Author <a name = "authors"></a>
 
-- [@kylelobo](https://github.com/dani-gouken) - Idea & Initial work
+- [@dani-gouken](https://github.com/dani-gouken) - Idea & Initial work
 

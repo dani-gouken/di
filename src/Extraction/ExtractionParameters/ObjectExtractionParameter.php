@@ -21,6 +21,12 @@ class ObjectExtractionParameter extends AbstractExtractionParameter implements E
      */
     private $cacheResult;
 
+    /**
+     * ObjectExtractionParameter constructor.
+     * @param string $className
+     * @param array $constructorArgs
+     * @param bool $cacheResult
+     */
     public function __construct(string $className, array $constructorArgs = [], $cacheResult = false)
     {
         $this->className = $className;

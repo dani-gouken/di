@@ -19,6 +19,11 @@ class BuildObject extends AbstractDefinition
      */
     private $extractionParameter;
 
+    /**
+     * BuildObject constructor.
+     * @param string $className
+     * @param array $constructorParameter
+     */
     public function __construct(string $className, array $constructorParameter = [])
     {
         $this->className = $className;

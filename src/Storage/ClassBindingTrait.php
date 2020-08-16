@@ -3,7 +3,6 @@
 
 namespace Atom\DI\Storage;
 
-use Atom\DI\Contracts\DefinitionContract;
 use Atom\DI\Definitions\BuildObject;
 use Atom\DI\Definitions\Value;
 
@@ -13,7 +12,6 @@ use Atom\DI\Definitions\Value;
  */
 trait ClassBindingTrait
 {
-    abstract public function store(string $key, DefinitionContract $definition);
     /**
      * @param string $className
      * @return BuildObject
