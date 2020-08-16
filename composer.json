@@ -33,5 +33,5 @@
             "tests/Misc/functions.php"
         ]
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "dev"
 }
