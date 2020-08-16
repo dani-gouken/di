@@ -1,7 +1,7 @@
 {
-    "name": "atom/dic",
+    "name": "phpatom/di",
     "description": "An expressive and flexible dependency injection container for PHP",
-    "keywords": ["framework", "laravel"],
+    "keywords": ["atom", "di","dependency injection","container","dependency injection container","framework","ioc","inversion of control"],
     "license": "MIT",
     "type": "library",
     "require": {
