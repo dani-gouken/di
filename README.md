@@ -109,7 +109,7 @@ This storage is suitable to store plain values or instance
    $dic->get("baz")(); // i am baz 
 ``` 
 The method `` $dic->as()`` return a definition factory. It can be used to generate definitions.
-for example `` $dic->as()->value() `` will return an object of type ``Atom\Definitions\Value``;
+for example `` $dic->as()->value() `` will return an object of type ``Atom\DI\Definitions\Value``;
 -  bind instances
 ```php
     class Service{
@@ -177,7 +177,7 @@ echo $mycar->model; // lamborghini veneno
 The method ``$dic->as()->instanceOf(Car::class)`` will generate a new instance of ``Atom\DI\Definition\BuildObject``. It is a definition used to explain how an object should be build.
 <br>- ``withConstructorParameter`` is used set the values that will be passed to the constructor of the object.
 <br>- ``with`` is used to bind a class name to the constructor. it basically says that, if the constructor needs an instance of ``Engine``, use this definitions. That definition can be any valid definitions, from a fixed value, a new instance to method call.
-Here, the call to ``$dic->as()->get("engine_model")`` will return an instance of ``Oxygen\Definition\Get``. It is used to resolve a value from the container 
+Here, the call to ``$dic->as()->get("engine_model")`` will return an instance of ``Atom\DI\Definition\Get``. It is used to resolve a value from the container 
 <br>- ``withParameter`` can be used to bind a parameter name to a definition.
 ```php
 $dic = new \Atom\DI\DIC();
