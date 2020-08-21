@@ -66,7 +66,7 @@ $dic = new Atom\DI\DIC();
 var_dump($dic instanceof psr\container\ContainerInterface); //true    
 
 //store bindings in the container
-$dic->factories()->store(
+$dic->singletons()->store(
     MyServiceInterface::class, 
     $dic->as()->instanceOf(MyService::class)
     ->withParameter("servicekey",$dic->as()->get("servicekey"))
