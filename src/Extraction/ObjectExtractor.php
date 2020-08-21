@@ -45,7 +45,7 @@ class ObjectExtractor implements ExtractorContract
         }
         $constructor = $reflectedClass->getConstructor();
         if (is_null($constructor)) {
-            return $this->cacheAndReturn($params, $container->values(), $reflectedClass->newInstance());
+            return $this->cacheAndReturn($params, $container->bindings(), $reflectedClass->newInstance());
         }
         $constructor->getParameters();
         $resolvedParameters = $this->getFunctionParameters(
@@ -55,7 +55,7 @@ class ObjectExtractor implements ExtractorContract
             $params->getConstructorArgs()
         );
         $result = $reflectedClass->newInstanceArgs($resolvedParameters);
-        return $this->cacheAndReturn($params, $container->values(), $result);
+        return $this->cacheAndReturn($params, $container->bindings(), $result);
     }
 
     /**

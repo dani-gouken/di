@@ -18,10 +18,10 @@ class SingletonStorage extends AbstractStorage
     protected $container;
 
     /**
-     * Resolved values
+     * Resolved bindings
      * @var array
      */
-    public $resolvedValues = [];
+    public $resolvedBindings = [];
     public const STORAGE_KEY = "SINGLETONS";
 
     public function __construct(DIC $container)
@@ -38,14 +38,14 @@ class SingletonStorage extends AbstractStorage
      */
     public function get(string $key)
     {
-        if (array_key_exists($key, $this->resolvedValues)) {
-            return $this->resolvedValues[$key];
+        if (array_key_exists($key, $this->resolvedBindings)) {
+            return $this->resolvedBindings[$key];
         }
         if (!$this->has($key)) {
             throw new NotFoundException($key, $this);
         }
         $value = $this->container->extract($this->getDescriptions()[$key], $key);
-        $this->resolvedValues[$key] = $value;
+        $this->resolvedBindings[$key] = $value;
         return $value;
     }
 

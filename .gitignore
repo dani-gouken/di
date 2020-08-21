@@ -4,3 +4,4 @@ composer.phar
 /.phpintel/
 /.idea/
 clover.xml
+.phpunit.result.cache

@@ -180,7 +180,7 @@ class DICTest extends BaseTestCase
      */
     public function testItCanLoadValueStorage()
     {
-        $this->assertInstanceOf(ValueStorage::class, $this->getContainer()->values());
+        $this->assertInstanceOf(ValueStorage::class, $this->getContainer()->bindings());
     }
 
     /**
@@ -252,7 +252,7 @@ class DICTest extends BaseTestCase
         $container->getExtractionChain()->append("bar");
         $container->getExtractionChain()->append("baz");
 
-        $container->values()->store("foo", new Value("bar"));
+        $container->bindings()->store("foo", new Value("bar"));
         $this->assertEquals("bar", $container->get("foo"));
         $this->assertEquals("bar", $container->get("foo", ValueStorage::STORAGE_KEY));
 
@@ -275,7 +275,7 @@ class DICTest extends BaseTestCase
     public function testGetThrowsIfTheValueIsNotInTheStorageOrTheStorageDoesntExists()
     {
         $container = $this->getContainer();
-        $container->values()->store("foo", new Value("bar"));
+        $container->bindings()->store("foo", new Value("bar"));
         $this->assertEquals("bar", $container->get("foo", ValueStorage::STORAGE_KEY));
         $this->expectException(NotFoundException::class);
         $container->get("foo", FactoryStorage::STORAGE_KEY, [], false);
@@ -293,7 +293,7 @@ class DICTest extends BaseTestCase
     public function testGetMakeTheObjectIfTheValueIsNotAvailable()
     {
         $container = $this->getContainer();
-        $container->values()->store("foo", new Value("bar"));
+        $container->bindings()->store("foo", new Value("bar"));
         $this->assertInstanceOf(Dummy1::class, $container->get(Dummy1::class));
     }
 
@@ -323,7 +323,7 @@ class DICTest extends BaseTestCase
         $container->getExtractionChain()->append("jhon");
         $container->getExtractionChain()->append("doe");
 
-        $container->values()->store("foo", new Value("bar"));
+        $container->bindings()->store("foo", new Value("bar"));
         $this->assertEquals("bar", $container->getDependency("foo"));
         $this->assertCount(3, $container->getExtractionChain()->chain);
     }
@@ -338,7 +338,7 @@ class DICTest extends BaseTestCase
     public function testGetDependencyThrowsIfTheValueIsNotInTheStorageOrTheStorageDoesntExists()
     {
         $container = $this->getContainer();
-        $container->values()->store("foo", new Value("bar"));
+        $container->bindings()->store("foo", new Value("bar"));
         $this->assertEquals("bar", $container->get("foo", ValueStorage::STORAGE_KEY));
         $this->expectException(NotFoundException::class);
         $container->getExtractionChain()->clear();
@@ -357,7 +357,7 @@ class DICTest extends BaseTestCase
     public function testGetDependencyMakeTheObjectIfTheValueIsNotAvailable()
     {
         $container = $this->getContainer();
-        $container->values()->store("foo", new Value("bar"));
+        $container->bindings()->store("foo", new Value("bar"));
         $this->assertInstanceOf(Dummy1::class, $container->getDependency(Dummy1::class));
     }
 
@@ -381,7 +381,7 @@ class DICTest extends BaseTestCase
     public function testHas()
     {
         $container = $this->getContainer();
-        $container->values()->store("foo", new Value("bar"));
+        $container->bindings()->store("foo", new Value("bar"));
         $this->assertTrue($container->has("foo"));
         $this->assertTrue($container->has("foo", ValueStorage::STORAGE_KEY));
         $this->assertFalse($container->has("foo", FactoryStorage::STORAGE_KEY));
@@ -398,7 +398,7 @@ class DICTest extends BaseTestCase
     public function testGetStorageFor()
     {
         $container = $this->getContainer();
-        $container->values()->store("foo", new Value("bar"));
+        $container->bindings()->store("foo", new Value("bar"));
         $container->singletons()->store("bar", new Value("baz"));
         $this->assertInstanceOf(ValueStorage::class, $container->getStorageFor("foo"));
         $this->assertInstanceOf(SingletonStorage::class, $container->getStorageFor("bar"));
@@ -410,34 +410,34 @@ class DICTest extends BaseTestCase
     public function testTheContainerImplementsArrayAccess()
     {
         $container = $this->getContainer();
-        //STORE VALUES
+        //STORE bindings
         $container["foo"] = new Value("bar");
-        $container["VALUES::foo"] = new Value("baz");
+        $container["BINDINGS::foo"] = new Value("baz");
         $container["FACTORIES::bar"] = new CallFunction('Atom\DI\Test\Misc\returnFoo');
-        //RETREIVE VALUES
+        //RETREIVE bindings
         $this->assertEquals($container["foo"], "bar");
-        $this->assertEquals($container["VALUES::foo"], "baz");
+        $this->assertEquals($container["BINDINGS::foo"], "baz");
         $this->assertEquals($container["FACTORIES::bar"], "foo");
         $this->assertEquals($container["bar"], "foo");
-        //UPDATE VALUES, cannot update SINGLETON(default) because it will return the same value everytimes
-        $container["VALUES::foo"] = new Value("jhon");
+        //UPDATE bindings, cannot update SINGLETON(default) because it will return the same value everytimes
+        $container["BINDINGS::foo"] = new Value("jhon");
         $container["FACTORIES::bar"] = new callFunction('Atom\DI\Test\Misc\returnBar');
-        $this->assertEquals($container["VALUES::foo"], "jhon");
+        $this->assertEquals($container["BINDINGS::foo"], "jhon");
         $this->assertEquals($container["bar"], "bar");
-        //UNSET VALUES
-        unset($container["VALUES::foo"]);
+        //UNSET bindings
+        unset($container["BINDINGS::foo"]);
         $this->expectException(ContainerException::class);
-        $container["VALUES::foo"];
+        $container["BINDINGS::foo"];
         $this->assertEquals($container["foo"], "bar");
         $this->assertTrue(isset($container["foo"]));
         $this->assertTrue($container->offsetExists("foo"));
-        $this->assertFalse(isset($container["VALUES::foo"]));
+        $this->assertFalse(isset($container["BINDINGS::foo"]));
         unset($container["foo"]);
         $this->assertFalse(isset($container["foo"]));
         $this->assertNull($container["foo"]);
         $this->assertEquals($container["bar"], "bar");
         //EXISTS
-        $this->assertFalse(isset($container["VALUES::foo"]));
+        $this->assertFalse(isset($container["BINDINGS::foo"]));
         $this->assertFalse(isset($container["foo"]));
         $this->assertFalse(isset($container["jhon"]));
         $this->assertTrue(isset($container["bar"]));
@@ -478,9 +478,9 @@ class DICTest extends BaseTestCase
         $this->assertInstanceOf(ExtractionChain::class, $this->getContainer()->getExtractionChain());
     }
 
-    public function testLazy()
+    public function testNew()
     {
-        $this->assertInstanceOf(DefinitionFactory::class, $this->getContainer()->lazy());
+        $this->assertInstanceOf(DefinitionFactory::class, $this->getContainer()->new());
     }
     public function testAs()
     {
@@ -498,8 +498,8 @@ class DICTest extends BaseTestCase
             $resolvedContainer = $container;
             $resolvedValue = $value;
         });
-        $container->values()->store("foo", $container->as()->value("bar"));
-        $container->values()->store("bar", $container->as()->value("baz"));
+        $container->bindings()->store("foo", $container->as()->value("bar"));
+        $container->bindings()->store("bar", $container->as()->value("baz"));
 
         $bar = $container->get("foo");
         $this->assertEquals(1, $i);
@@ -525,7 +525,7 @@ class DICTest extends BaseTestCase
         $resolvedValue = null;
         $resolvedContainer = null;
         $i = 0;
-        $container->values()->store("foo", $container->as()->value("bar"));
+        $container->bindings()->store("foo", $container->as()->value("bar"));
         $container->resolved(
             "foo",
             function ($value, $container) use (&$i, &$resolvedValue, &$resolvedContainer) {

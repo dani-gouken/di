@@ -37,7 +37,7 @@ class ContainerExtractorTest extends BaseTestCase
     public function testExtract()
     {
         $dic = $this->getContainer();
-        $dic->values()->store("answer", new Value("42"));
+        $dic->bindings()->store("answer", new Value("42"));
         $extractor = $this->makeExtractor();
         $this->assertEquals("42", $extractor->extract(new ContainerExtractionParameter("answer"), $dic));
         $this->expectException(NotFoundException::class);

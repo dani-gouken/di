@@ -40,7 +40,7 @@ class DIC implements ContainerInterface, ArrayAccess
     /**
      * @var array
      */
-    private $resolvedValues = [];
+    private $resolvedStorage = [];
     /**
      * @var callable
      */
@@ -222,7 +222,7 @@ class DIC implements ContainerInterface, ArrayAccess
      * @return ValueStorage
      * @throws StorageNotFoundException
      */
-    public function values(): ValueStorage
+    public function bindings(): ValueStorage
     {
         /**
          * @var ValueStorage $result
@@ -343,12 +343,12 @@ class DIC implements ContainerInterface, ArrayAccess
         if (!is_null($storage)) {
             return $this->getStorage($storage)->has($alias);
         }
-        if (isset($this->resolvedValues[$alias])) {
+        if (isset($this->resolvedStorage[$alias])) {
             return true;
         }
         foreach ($this->container as $storage) {
             if ($storage->has($alias)) {
-                $this->resolvedValues[$alias] = $storage->getStorageKey();
+                $this->resolvedStorage[$alias] = $storage->getStorageKey();
                 return true;
             }
         }
@@ -362,12 +362,12 @@ class DIC implements ContainerInterface, ArrayAccess
      */
     public function getStorageFor($alias): StorageContract
     {
-        if (array_key_exists($alias, $this->resolvedValues)) {
-            return $this->container[$this->resolvedValues[$alias]];
+        if (array_key_exists($alias, $this->resolvedStorage)) {
+            return $this->container[$this->resolvedStorage[$alias]];
         }
         foreach ($this->container as $storage) {
             if ($storage->has($alias)) {
-                $this->resolvedValues[$alias] = $storage->getStorageKey();
+                $this->resolvedStorage[$alias] = $storage->getStorageKey();
                 return $storage;
             }
         }
@@ -498,13 +498,13 @@ class DIC implements ContainerInterface, ArrayAccess
      */
     public function as()
     {
-        return $this->lazy();
+        return $this->new();
     }
 
     /**
      * @return DefinitionFactory
      */
-    public function lazy()
+    public function new()
     {
         return new DefinitionFactory();
     }

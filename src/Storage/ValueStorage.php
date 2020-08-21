@@ -14,7 +14,7 @@ use Atom\DI\Extraction\ValueExtractor;
 class ValueStorage extends AbstractStorage
 {
     use ClassBindingTrait;
-    public const STORAGE_KEY = "VALUES";
+    public const STORAGE_KEY = "BINDINGS";
 
     protected $supportedExtractors= [ValueExtractor::class,ObjectExtractor::class,ContainerExtractor::class];
 

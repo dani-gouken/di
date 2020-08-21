@@ -22,7 +22,7 @@ class ValueStorageTest extends BaseTestCase
     }
     public function testStorageKey()
     {
-        $this->assertEquals("VALUES", $this->makeStorage()->getStorageKey());
+        $this->assertEquals("BINDINGS", $this->makeStorage()->getStorageKey());
     }
 
     /**
