@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Atom\DI\Test\Definitions;
+namespace Atom\DI\Tests\Storage;
 
 use Atom\DI\Definitions\BuildObject;
 use Atom\DI\Definitions\Value;
 use Atom\DI\Storage\ClassBindingTrait;
-use Atom\DI\Test\BaseTestCase;
-use Atom\DI\Test\Misc\Dummy1;
+use Atom\DI\Tests\BaseTestCase;
+use Atom\DI\Tests\Misc\Dummy1;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class ClassBindingTraitTest extends BaseTestCase

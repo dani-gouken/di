@@ -1,12 +1,12 @@
 <?php
 
 
-namespace Atom\DI\Test\Definitions;
+namespace Atom\DI\Tests\Definitions;
 
 use Atom\DI\Definitions\CallableDefinitionFactory;
 use Atom\DI\Definitions\CallFunction;
 use Atom\DI\Definitions\CallMethod;
-use Atom\DI\Test\BaseTestCase;
+use Atom\DI\Tests\BaseTestCase;
 
 class CallableDefinitionFactoryTest extends BaseTestCase
 {

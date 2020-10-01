@@ -31,12 +31,12 @@ class ValueStorage extends AbstractStorage
 
 
     /**
-     * @param string $key
+     * @param $key
      * @param DefinitionContract $value
      * @return mixed|void
      * @throws UnsupportedInvokerException
      */
-    public function store(string $key, DefinitionContract $value)
+    public function store($key, DefinitionContract $value)
     {
         if (!$this->supportExtractor($value->getExtractorClassName())) {
             throw new UnsupportedInvokerException($this->getStorageKey(), $key, $value, $this->supportedExtractors);

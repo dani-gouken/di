@@ -1,6 +1,6 @@
 <?php
 
-namespace Atom\DI\Test\Storage;
+namespace Atom\DI\Tests\Storage;
 
 use Atom\DI\Contracts\ExtractorContract;
 use Atom\DI\Exceptions\ContainerException;
@@ -8,11 +8,11 @@ use Atom\DI\Exceptions\NotFoundException;
 use Atom\DI\Extraction\ExtractionParameters\ValueExtractionParameter;
 use Atom\DI\Extraction\FunctionExtractor;
 use Atom\DI\Storage\AbstractStorage;
-use Atom\DI\Test\BaseTestCase;
 use Atom\DI\Definitions\Value;
+use Atom\DI\Tests\BaseTestCase;
 use TypeError;
 
-class AbstractDefinitionTest extends BaseTestCase
+class AbstractStorageTest extends BaseTestCase
 {
     private function makeStorage(): AbstractStorage
     {
@@ -67,12 +67,27 @@ class AbstractDefinitionTest extends BaseTestCase
         $this->assertFalse($storage->contains("bar"));
     }
 
+    /**
+     * @throws ContainerException
+     * @throws NotFoundException
+     */
     public function testStore()
     {
         $storage = $this->makeStorage();
         $this->assertFalse($storage->has("foo"));
         $storage->store("foo", new Value("bar"));
         $this->assertTrue($storage->has("foo"));
+        $storage->store(["bar","baz","jhon"], new Value("42"));
+        $this->assertTrue($storage->has("bar"));
+        $this->assertTrue($storage->has("baz"));
+        $this->assertTrue($storage->has("jhon"));
+
+        $bar = $storage->resolve("bar");
+        $this->assertEquals($bar, $storage->resolve("baz"));
+        $this->assertEquals($bar, $storage->resolve("jhon"));
+        $this->assertEquals("42", $storage->get("bar"));
+        $this->assertEquals("42", $storage->get("baz"));
+        $this->assertEquals("42", $storage->get("jhon"));
     }
 
     /**
@@ -130,9 +145,9 @@ class AbstractDefinitionTest extends BaseTestCase
     public function testGetDescriptions()
     {
         $storage = $this->makeStorage();
-        $this->assertEquals($storage->getDescriptions(), []);
+        $this->assertEquals([], $storage->getDefinitions());
         $storage->store("foo", $value = new Value("bar"));
-        $this->assertEquals($storage->getDescriptions(), ["foo" => $value]);
+        $this->assertEquals(["foo" => 0], $storage->getBindings());
     }
 
     public function testRemove()

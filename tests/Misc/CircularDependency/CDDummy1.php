@@ -1,6 +1,6 @@
 <?php
 
-namespace Atom\DI\Test\Misc\CircularDependency;
+namespace Atom\DI\Tests\Misc\CircularDependency;
 
 class CDDummy1
 {

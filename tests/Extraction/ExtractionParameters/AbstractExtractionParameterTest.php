@@ -1,13 +1,12 @@
 <?php
 
-
-namespace Atom\DI\Test\Extraction\ExtractionParameters;
+namespace Atom\DI\Tests\Extraction\ExtractionParameters;
 
 use Atom\DI\Extraction\ExtractionParameters\AbstractExtractionParameter;
 use Atom\DI\Mapping\Mapping;
 use Atom\DI\Mapping\MappingItem;
-use Atom\DI\Test\BaseTestCase;
 use Atom\DI\Definitions\Value;
+use Atom\DI\Tests\BaseTestCase;
 
 class AbstractExtractionParameterTest extends BaseTestCase
 {

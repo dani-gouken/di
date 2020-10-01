@@ -23,6 +23,7 @@ use Atom\DI\Storage\FactoryStorage;
 use Atom\DI\Storage\SingletonStorage;
 use Atom\DI\Storage\ValueStorage;
 use Atom\DI\Storage\WildcardStorage;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 
 class DIC implements ContainerInterface, ArrayAccess
@@ -65,7 +66,6 @@ class DIC implements ContainerInterface, ArrayAccess
 
     /**
      * @return DIC
-     * @throws ContainerException
      */
     public static function getInstance()
     {
@@ -186,7 +186,7 @@ class DIC implements ContainerInterface, ArrayAccess
      * return the default storage alias
      * @return string
      */
-    public function getDefaultStorageAlias(): String
+    public function getDefaultStorageAlias(): string
     {
         return $this->defaultStorageAlias;
     }
@@ -269,8 +269,21 @@ class DIC implements ContainerInterface, ArrayAccess
             $callback($result, $this);
         }
         if ($key != null && array_key_exists($key, $this->resolutionCallback)) {
-            $result = $this->resolutionCallback[$key]($result,$this) ?? $result;
+            $result = $this->resolutionCallback[$key]($result, $this) ?? $result;
         }
+        return $result;
+    }
+
+    /**
+     * @param DefinitionContract $definition
+     * @return mixed
+     * @throws ContainerException
+     */
+    public function interpret(DefinitionContract $definition)
+    {
+        $this->getExtractionChain()->clear();
+        $result = $this->extract($definition);
+        $this->getExtractionChain()->clear();
         return $result;
     }
 
@@ -290,7 +303,7 @@ class DIC implements ContainerInterface, ArrayAccess
 
     /**
      * Return a value store inside the container
-     * @param string $alias
+     * @param $alias
      * @param string|null $storage
      * @param array $args
      * @param bool $makeIfNotAvailable
@@ -303,7 +316,9 @@ class DIC implements ContainerInterface, ArrayAccess
     public function get($alias, ?string $storage = null, $args = [], $makeIfNotAvailable = true)
     {
         $this->chain->clear();
-        return $this->getDependency($alias, $storage, $args, $makeIfNotAvailable);
+        $result = $this->getDependency($alias, $storage, $args, $makeIfNotAvailable);
+        $this->chain->clear();
+        return $result;
     }
 
     /**
@@ -318,11 +333,11 @@ class DIC implements ContainerInterface, ArrayAccess
      * @throws StorageNotFoundException
      * @throws CircularDependencyException
      */
-    public function getDependency(String $alias, ?string $storage = null, $args = [], bool $makeIfNotAvailable = true)
+    public function getDependency(string $alias, ?string $storage = null, $args = [], bool $makeIfNotAvailable = true)
     {
         $this->chain->append($alias);
         if (!$this->has($alias, $storage) && $makeIfNotAvailable) {
-            return  $this->make($alias, is_array($args) ? $args : [$args]);
+            return $this->make($alias, is_array($args) ? $args : [$args], false);
         }
         if (!is_null($storage)) {
             return $this->getStorage($storage)->get($alias);
@@ -333,8 +348,8 @@ class DIC implements ContainerInterface, ArrayAccess
 
     /**
      * check if the container can build the object that has the given alias
-     * @param string $alias
-     * @param string $storage
+     * @param $alias
+     * @param string|null $storage
      * @return bool
      * @throws StorageNotFoundException
      */
@@ -461,18 +476,25 @@ class DIC implements ContainerInterface, ArrayAccess
         foreach ($this->getContainer() as $storageKey => $storage) {
             $storage->remove($storageKey);
         }
-        return;
     }
 
     /**
      * @param string $alias
      * @param array $params
+     * @param bool $clearChain
      * @return mixed
      * @throws ContainerException
      */
-    public function make(string $alias, array $params = [])
+    public function make(string $alias, array $params = [], bool $clearChain = true)
     {
-        return $this->extract(new BuildObject($alias, $params), $alias);
+        $definition = new BuildObject($alias, $params);
+        if ($clearChain) {
+            $result = $this->interpret($definition);
+        } else {
+            $result = $this->extract($definition, $alias);
+        }
+        unset($definition);
+        return $result;
     }
 
 
@@ -512,7 +534,7 @@ class DIC implements ContainerInterface, ArrayAccess
     public function resolved($key, ?callable $callback = null)
     {
         if ($callback != null && !is_string($key)) {
-            throw new \InvalidArgumentException("The resolution callback must be a valid callable");
+            throw new InvalidArgumentException("The resolution callback must be a valid callable");
         }
         if ($callback == null) {
             $this->globalResolutionCallback = $key;

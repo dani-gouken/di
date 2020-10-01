@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Atom\DI\Test\Extraction\ExtractionParameters;
+namespace Atom\DI\Tests\Extraction\ExtractionParameters;
 
 use Atom\DI\Extraction\ExtractionParameters\ContainerExtractionParameter;
-use Atom\DI\Test\BaseTestCase;
+use Atom\DI\Tests\BaseTestCase;
 
 class ContainerExtractionParameterTest extends BaseTestCase
 {
@@ -21,8 +21,8 @@ class ContainerExtractionParameterTest extends BaseTestCase
     public function testGetExtractionKey()
     {
         $this->assertEquals(
-            $this->makeParameter("foo")->getExtractionKey(),
-            "foo"
+            "foo",
+            $this->makeParameter("foo")->getExtractionKey()
         );
     }
 }

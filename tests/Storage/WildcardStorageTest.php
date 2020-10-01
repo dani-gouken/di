@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Atom\DI\Test\Storage;
+namespace Atom\DI\Tests\Storage;
 
 use Atom\DI\Definitions\Value;
 use Atom\DI\Definitions\Wildcard;
 use Atom\DI\Exceptions\NotFoundException;
 use Atom\DI\Exceptions\UnsupportedInvokerException;
 use Atom\DI\Storage\WildcardStorage;
-use Atom\DI\Test\BaseTestCase;
+use Atom\DI\Tests\BaseTestCase;
 
 class WildcardStorageTest extends BaseTestCase
 {

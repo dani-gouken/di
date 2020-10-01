@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Atom\DI\Test\Extraction;
+namespace Atom\DI\Tests\Extraction;
 
 use Atom\DI\Definitions\Value;
 use Atom\DI\Exceptions\CircularDependencyException;
@@ -13,11 +13,10 @@ use Atom\DI\Extraction\ExtractionParameters\FunctionExtractionParameter;
 use Atom\DI\Extraction\ExtractionParameters\MethodExtractionParameter;
 use Atom\DI\Extraction\MethodExtractor;
 use Atom\DI\Definitions\Get;
-use Atom\DI\Test\BaseTestCase;
-use Atom\DI\Test\Misc\Dummy1;
-use Atom\DI\Test\Misc\Dummy2;
-use Atom\DI\Test\Misc\Dummy3;
-use Atom\DI\Definitions\zValue;
+use Atom\DI\Tests\BaseTestCase;
+use Atom\DI\Tests\Misc\Dummy1;
+use Atom\DI\Tests\Misc\Dummy2;
+use Atom\DI\Tests\Misc\Dummy3;
 use ReflectionException;
 
 class MethodExtractorTest extends BaseTestCase

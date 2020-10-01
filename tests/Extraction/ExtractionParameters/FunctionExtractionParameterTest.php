@@ -1,11 +1,10 @@
 <?php
 
+namespace Atom\DI\Tests\Extraction\ExtractionParameters;
 
-namespace Atom\DI\Test\Extraction\ExtractionParameters;
-
+use Atom\DI\Tests\BaseTestCase;
 use InvalidArgumentException;
 use Atom\DI\Extraction\ExtractionParameters\FunctionExtractionParameter;
-use Atom\DI\Test\BaseTestCase;
 
 class FunctionExtractionParameterTest extends BaseTestCase
 {
@@ -30,7 +29,7 @@ class FunctionExtractionParameterTest extends BaseTestCase
     public function testGetExtractionKey()
     {
         $param = $this->makeParameter("foo");
-        $this->assertEquals($param->getExtractionKey(), "foo");
+        $this->assertEquals("foo", $param->getExtractionKey());
 
         $param = $this->makeParameter(function () {
         });
@@ -40,7 +39,7 @@ class FunctionExtractionParameterTest extends BaseTestCase
     public function testGetMethod()
     {
         $param = $this->makeParameter("foo");
-        $this->assertEquals($param->getMethod(), "foo");
+        $this->assertEquals("foo", $param->getMethod());
         $param = $this->makeParameter($closure = function () {
         });
         $this->assertEquals($param->getMethod(), $closure);

@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Atom\DI\Test\Extraction;
+namespace Atom\DI\Tests\Extraction;
 
 use Atom\DI\Extraction\ExtractionParameters\ContainerExtractionParameter;
 use Atom\DI\Extraction\ExtractionParameters\ValueExtractionParameter;
 use Atom\DI\Extraction\ValueExtractor;
-use Atom\DI\Test\BaseTestCase;
-use Atom\DI\Test\Misc\Dummy1;
+use Atom\DI\Tests\BaseTestCase;
+use Atom\DI\Tests\Misc\Dummy1;
 
 class ValueExtractorTest extends BaseTestCase
 {

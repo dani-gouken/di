@@ -1,6 +1,6 @@
 <?php
 
-namespace Atom\DI\Test\Misc;
+namespace Atom\DI\Tests\Misc;
 
 function returnFoo()
 {
@@ -31,4 +31,3 @@ function returnDummy1(Dummy1 $dummy1)
 {
     return $dummy1;
 }
-

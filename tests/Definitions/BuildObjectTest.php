@@ -1,11 +1,12 @@
 <?php
 
 
-namespace Atom\DI\Test;
+namespace Atom\DI\Tests\Definitions;
 
 use Atom\DI\Definitions\BuildObject;
 use Atom\DI\Extraction\ExtractionParameters\ObjectExtractionParameter;
 use Atom\DI\Extraction\ObjectExtractor;
+use Atom\DI\Tests\BaseTestCase;
 
 class BuildObjectTest extends BaseTestCase
 {

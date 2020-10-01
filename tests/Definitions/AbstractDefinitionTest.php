@@ -1,17 +1,17 @@
 <?php
 
-
-namespace Atom\DI\Test;
+namespace Atom\DI\Tests\Definitions;
 
 use Atom\DI\Definitions\AbstractDefinition;
 use Atom\DI\Extraction\ExtractionParameters\ValueExtractionParameter;
 use Atom\DI\Definitions\Value;
+use Atom\DI\Tests\BaseTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class AbstractDefinitionTest extends BaseTestCase
 {
     /**
-     * @return AbstractDefinition
+     * @return AbstractDefinition | MockObject
      */
     public function makeDefinition(): AbstractDefinition
     {

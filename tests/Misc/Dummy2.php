@@ -1,6 +1,6 @@
 <?php
 
-namespace Atom\DI\Test\Misc;
+namespace Atom\DI\Tests\Misc;
 
 class Dummy2
 {

@@ -1,11 +1,10 @@
 <?php
 
-
-namespace Atom\DI\Test\Extraction;
+namespace Atom\DI\Tests\Extraction;
 
 use Atom\DI\Exceptions\CircularDependencyException;
 use Atom\DI\Extraction\ExtractionChain;
-use Atom\DI\Test\BaseTestCase;
+use Atom\DI\Tests\BaseTestCase;
 
 class ExtractionChainTest extends BaseTestCase
 {

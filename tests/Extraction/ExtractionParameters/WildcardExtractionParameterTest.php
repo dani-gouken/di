@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Atom\DI\Test\Extraction\ExtractionParameters;
+namespace Atom\DI\Tests\Extraction\ExtractionParameters;
 
 use Atom\DI\Extraction\ExtractionParameters\WildcardExtractionParameter;
-use Atom\DI\Test\BaseTestCase;
+use Atom\DI\Tests\BaseTestCase;
 
 class WildcardExtractionParameterTest extends BaseTestCase
 {

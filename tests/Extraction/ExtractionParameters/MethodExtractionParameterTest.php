@@ -1,12 +1,12 @@
 <?php
 
-
-namespace Atom\DI\Test\Extraction\ExtractionParameters;
+namespace Atom\DI\Tests\Extraction\ExtractionParameters;
 
 use Atom\DI\Extraction\ExtractionParameters\MethodExtractionParameter;
-use Atom\DI\Test\BaseTestCase;
-use Atom\DI\Test\Misc\Dummy1;
 use Atom\DI\Definitions\Value;
+use Atom\DI\Tests\BaseTestCase;
+use Atom\DI\Tests\Misc\Dummy1;
+use InvalidArgumentException;
 
 class MethodExtractionParameterTest extends BaseTestCase
 {
@@ -17,7 +17,7 @@ class MethodExtractionParameterTest extends BaseTestCase
 
     public function testItCantBeInstantiated()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->makeParameter(1, "foo");
     }
 

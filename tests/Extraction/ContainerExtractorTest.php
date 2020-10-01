@@ -1,5 +1,6 @@
 <?php
-namespace Atom\DI\Test\Extraction;
+
+namespace Atom\DI\Tests\Extraction;
 
 use Atom\DI\Exceptions\CircularDependencyException;
 use Atom\DI\Exceptions\ContainerException;
@@ -9,7 +10,7 @@ use Atom\DI\Exceptions\UnsupportedInvokerException;
 use Atom\DI\Extraction\ContainerExtractor;
 use Atom\DI\Extraction\ExtractionParameters\AbstractExtractionParameter;
 use Atom\DI\Extraction\ExtractionParameters\ContainerExtractionParameter;
-use Atom\DI\Test\BaseTestCase;
+use Atom\DI\Tests\BaseTestCase;
 use Atom\DI\Definitions\Value;
 
 class ContainerExtractorTest extends BaseTestCase

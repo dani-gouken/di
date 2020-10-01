@@ -1,10 +1,9 @@
 <?php
 
-
-namespace Atom\DI\Test\Extraction\ExtractionParameters;
+namespace Atom\DI\Tests\Extraction\ExtractionParameters;
 
 use Atom\DI\Extraction\ExtractionParameters\ObjectExtractionParameter;
-use Atom\DI\Test\BaseTestCase;
+use Atom\DI\Tests\BaseTestCase;
 
 class ObjectExtractionParameterTest extends BaseTestCase
 {
@@ -25,7 +24,7 @@ class ObjectExtractionParameterTest extends BaseTestCase
 
     public function testGetExtractionKey()
     {
-        $this->assertEquals($this->makeParameter("foo")->getExtractionKey(), "foo");
+        $this->assertEquals("foo", $this->makeParameter("foo")->getExtractionKey());
     }
 
     public function testGetConstructorArgs()
@@ -35,7 +34,7 @@ class ObjectExtractionParameterTest extends BaseTestCase
 
     public function testGetClassName()
     {
-        $this->assertEquals($this->makeParameter("foo")->getClassName(), "foo");
+        $this->assertEquals("foo", $this->makeParameter("foo")->getClassName());
     }
 
     public function testCanCacheResult()

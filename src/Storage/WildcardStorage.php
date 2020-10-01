@@ -15,12 +15,12 @@ class WildcardStorage extends AbstractStorage
     protected $supportedExtractors = [WildcardExtractor::class];
 
     /**
-     * @param string $key
+     * @param $key
      * @param Wildcard|DefinitionContract $value
      * @return mixed|void
      * @throws UnsupportedInvokerException
      */
-    public function store(string $key, DefinitionContract $value)
+    public function store($key, DefinitionContract $value)
     {
         if (!($value instanceof Wildcard)) {
             throw new UnsupportedInvokerException($this->getStorageKey(), $key, $value, $this->supportedExtractors);
@@ -41,7 +41,7 @@ class WildcardStorage extends AbstractStorage
          /**
          * @var Wildcard $description
          */
-        foreach ($this->descriptions as $description) {
+        foreach ($this->definitions as $description) {
             if ($this->match($description->getPattern(), $class)) {
                 return $description;
             }

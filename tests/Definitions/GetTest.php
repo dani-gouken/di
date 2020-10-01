@@ -1,11 +1,11 @@
 <?php
 
-
-namespace Atom\DI\Test;
+namespace Atom\DI\Tests\Definitions;
 
 use Atom\DI\Extraction\ContainerExtractor;
 use Atom\DI\Extraction\ExtractionParameters\ContainerExtractionParameter;
 use Atom\DI\Definitions\Get;
+use Atom\DI\Tests\BaseTestCase;
 
 class GetTest extends BaseTestCase
 {
@@ -29,5 +29,4 @@ class GetTest extends BaseTestCase
         $definition->withExtractionParameter($extractionParameter);
         $this->assertEquals($definition->getExtractionParameter(), $extractionParameter);
     }
-
 }

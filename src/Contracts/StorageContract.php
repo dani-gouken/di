@@ -3,7 +3,6 @@
 
 namespace Atom\DI\Contracts;
 
-use Nette\PhpGenerator\ClassType;
 use Atom\DI\DIC;
 use Atom\DI\Exceptions\ContainerException;
 
@@ -46,11 +45,11 @@ interface StorageContract
 
     /**
      * add a value to the storage
-     * @param string $key
+     * @param $key
      * @param DefinitionContract $definition
      * @return mixed
      */
-    public function store(string $key, DefinitionContract $definition);
+    public function store($key, DefinitionContract $definition);
 
     /**
      * resolve a value in the storage

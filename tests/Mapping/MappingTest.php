@@ -1,13 +1,12 @@
 <?php
 
-
-namespace Atom\DI\Test\Mapping;
+namespace Atom\DI\Tests\Mapping;
 
 use Atom\DI\Exceptions\ContainerException;
 use Atom\DI\Mapping\Mapping;
 use Atom\DI\Mapping\MappingItem;
-use Atom\DI\Test\BaseTestCase;
 use Atom\DI\Definitions\Value;
+use Atom\DI\Tests\BaseTestCase;
 
 class MappingTest extends BaseTestCase
 {
@@ -23,7 +22,7 @@ class MappingTest extends BaseTestCase
         $mapping->add(new MappingItem("bar", new Value("baz")));
 
         $this->assertTrue($mapping->hasMappingFor("foo"));
-        $this->assertEquals($mapping->getMappingFor("foo")->getDefinition()->getValue(), "bar");
+        $this->assertEquals("bar", $mapping->getMappingFor("foo")->getDefinition()->getValue());
         $this->assertCount(2, $mapping->getMappedEntities());
     }
 

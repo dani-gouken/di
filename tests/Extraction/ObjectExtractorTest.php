@@ -1,7 +1,5 @@
 <?php
-
-
-namespace Atom\DI\Test\Extraction;
+namespace Atom\DI\Tests\Extraction;
 
 use Atom\DI\Exceptions\CircularDependencyException;
 use Atom\DI\Exceptions\ContainerException;
@@ -10,10 +8,10 @@ use Atom\DI\Exceptions\StorageNotFoundException;
 use Atom\DI\Extraction\ExtractionParameters\ContainerExtractionParameter;
 use Atom\DI\Extraction\ExtractionParameters\ObjectExtractionParameter;
 use Atom\DI\Extraction\ObjectExtractor;
-use Atom\DI\Test\BaseTestCase;
-use Atom\DI\Test\Misc\Dummy1;
-use Atom\DI\Test\Misc\Dummy2;
-use Atom\DI\Test\Misc\NotInstantiable;
+use Atom\DI\Tests\BaseTestCase;
+use Atom\DI\Tests\Misc\Dummy1;
+use Atom\DI\Tests\Misc\Dummy2;
+use Atom\DI\Tests\Misc\NotInstantiable;
 
 class ObjectExtractorTest extends BaseTestCase
 {

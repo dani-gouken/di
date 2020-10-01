@@ -1,17 +1,17 @@
 <?php
 
-namespace Atom\DI\Test\Storage;
+namespace Atom\DI\Tests\Storage;
 
 use Atom\DI\Definitions\CallFunction;
-use Atom\DI\Definitions \CallMethod;
+use Atom\DI\Definitions\CallMethod;
 use Atom\DI\Contracts\DefinitionContract;
 use Atom\DI\Exceptions\ContainerException;
 use Atom\DI\Exceptions\NotFoundException;
 use Atom\DI\Exceptions\UnsupportedInvokerException;
 use Atom\DI\Extraction\ExtractionParameters\ValueExtractionParameter;
 use Atom\DI\Storage\FactoryStorage;
-use Atom\DI\Test\BaseTestCase;
-use Atom\DI\Test\Misc\Dummy2;
+use Atom\DI\Tests\BaseTestCase;
+use Atom\DI\Tests\Misc\Dummy2;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class FactoryStorageTest extends BaseTestCase
@@ -46,14 +46,14 @@ class FactoryStorageTest extends BaseTestCase
     public function testStore()
     {
         $storage = $this->makeStorage();
-        $this->assertCount(0, $storage->getDescriptions());
+        $this->assertCount(0, $storage->getDefinitions());
 
         $storage->store("bar", new CallFunction(function () {
             return "baz";
         }));
         $storage->store("foo", (new CallMethod("getFoo"))->on(new Dummy2("foo")));
 
-        $this->assertCount(2, $storage->getDescriptions());
+        $this->assertCount(2, $storage->getDefinitions());
         $this->assertEquals("foo", $storage->get("foo"));
         $this->assertEquals("baz", $storage->get("bar"));
     }

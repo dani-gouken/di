@@ -1,6 +1,6 @@
 <?php
 
-namespace Atom\DI\Test\Extraction;
+namespace Atom\DI\Tests\Extraction;
 
 use Atom\DI\Contracts\ExtractionParameterContract;
 use Atom\DI\Exceptions\CircularDependencyException;
@@ -9,9 +9,10 @@ use Atom\DI\Exceptions\NotFoundException;
 use Atom\DI\Extraction\ExtractionParameters\FunctionExtractionParameter;
 use Atom\DI\Extraction\ExtractionParameters\MethodExtractionParameter;
 use Atom\DI\Extraction\FunctionExtractor;
-use Atom\DI\Test\BaseTestCase;
+use Atom\DI\Tests\BaseTestCase;
+
 use ReflectionException;
-use function Atom\DI\Test\Misc\returnBar;
+use function Atom\DI\Tests\Misc\returnBar;
 
 class FunctionExtractorTest extends BaseTestCase
 {
@@ -46,7 +47,7 @@ class FunctionExtractorTest extends BaseTestCase
         $this->assertEquals(
             "foo",
             $extractor->extract(
-                new FunctionExtractionParameter("Atom\\DI\\Test\\Misc\\returnFoo"),
+                new FunctionExtractionParameter("Atom\\DI\\Tests\\Misc\\returnFoo"),
                 $this->getContainer()
             ),
         );

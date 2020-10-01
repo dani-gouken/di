@@ -27,11 +27,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Atom\\DI\\Test\\": "tests"
+            "Atom\\DI\\Tests\\": "tests"
         },
-        "files": [
-            "tests/Misc/functions.php"
-        ]
-    },
-    "minimum-stability": "dev"
+        "files": ["tests/Misc/functions.php"]
+    }
 }

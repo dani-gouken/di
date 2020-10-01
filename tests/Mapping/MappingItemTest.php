@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Atom\DI\Test\Mapping;
+namespace Atom\DI\Tests\Mapping;
 
 use Atom\DI\Mapping\MappingItem;
-use Atom\DI\Test\BaseTestCase;
 use Atom\DI\Definitions\Value;
+use Atom\DI\Tests\BaseTestCase;
 
 class MappingItemTest extends BaseTestCase
 {

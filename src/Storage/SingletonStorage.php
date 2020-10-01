@@ -44,7 +44,7 @@ class SingletonStorage extends AbstractStorage
         if (!$this->has($key)) {
             throw new NotFoundException($key, $this);
         }
-        $value = $this->container->extract($this->getDescriptions()[$key], $key);
+        $value = $this->container->extract($this->resolve($key), $key);
         $this->resolvedBindings[$key] = $value;
         return $value;
     }

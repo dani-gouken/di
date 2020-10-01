@@ -1,6 +1,6 @@
 <?php
 
-namespace Atom\DI\Test\Storage;
+namespace Atom\DI\Tests\Storage;
 
 use Atom\DI\Definitions\BuildObject;
 use Atom\DI\Contracts\DefinitionContract;
@@ -9,9 +9,9 @@ use Atom\DI\Exceptions\NotFoundException;
 use Atom\DI\Exceptions\UnsupportedInvokerException;
 use Atom\DI\Extraction\FunctionExtractor;
 use Atom\DI\Storage\ValueStorage;
-use Atom\DI\Test\BaseTestCase;
-use Atom\DI\Test\Misc\Dummy1;
+use Atom\DI\Tests\BaseTestCase;
 use Atom\DI\Definitions\Value;
+use Atom\DI\Tests\Misc\Dummy1;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class ValueStorageTest extends BaseTestCase
@@ -46,12 +46,12 @@ class ValueStorageTest extends BaseTestCase
     public function testStore()
     {
         $storage = $this->makeStorage();
-        $this->assertCount(0, $storage->getDescriptions());
+        $this->assertCount(0, $storage->getDefinitions());
 
         $storage->store("bar", new Value("baz"));
         $storage->store("foo", new BuildObject(Dummy1::class));
 
-        $this->assertCount(2, $storage->getDescriptions());
+        $this->assertCount(2, $storage->getDefinitions());
         $this->assertInstanceOf(Dummy1::class, $storage->get("foo"));
         $this->assertEquals("baz", $storage->get("bar"));
     }

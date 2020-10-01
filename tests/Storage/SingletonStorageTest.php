@@ -1,6 +1,6 @@
 <?php
 
-namespace Atom\DI\Test\Storage;
+namespace Atom\DI\Tests\Storage;
 
 use Atom\DI\Definitions\AbstractDefinition;
 use Atom\DI\Contracts\DefinitionContract;
@@ -9,7 +9,7 @@ use Atom\DI\Exceptions\NotFoundException;
 use Atom\DI\Extraction\ExtractionParameters\ValueExtractionParameter;
 use Atom\DI\Extraction\ValueExtractor;
 use Atom\DI\Storage\SingletonStorage;
-use Atom\DI\Test\BaseTestCase;
+use Atom\DI\Tests\BaseTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class SingletonStorageTest extends BaseTestCase

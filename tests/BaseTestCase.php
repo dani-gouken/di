@@ -1,5 +1,5 @@
 <?php
-namespace Atom\DI\Test;
+namespace Atom\DI\Tests;
 
 use Atom\DI\DIC;
 use PHPUnit\Framework\TestCase;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Atom\DI\Test\Definitions;
+namespace Atom\DI\Tests\Definitions;
 
 use Atom\DI\Definitions\BuildObject;
 use Atom\DI\Definitions\CallableDefinitionFactory;
@@ -8,8 +8,8 @@ use Atom\DI\Definitions\DefinitionFactory;
 use Atom\DI\Definitions\Get;
 use Atom\DI\Definitions\Value;
 use Atom\DI\Definitions\Wildcard;
-use Atom\DI\Test\BaseTestCase;
-use Atom\DI\Test\Misc\Dummy1;
+use Atom\DI\Tests\BaseTestCase;
+use Atom\DI\Tests\Misc\Dummy1;
 
 class DefinitionFactoryTest extends BaseTestCase
 {
@@ -70,6 +70,4 @@ class DefinitionFactoryTest extends BaseTestCase
              $definition = $this->makeFactory()->callTo("foo")
          );
     }
-
-
 }
