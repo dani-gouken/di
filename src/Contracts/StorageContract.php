@@ -3,16 +3,16 @@
 
 namespace Atom\DI\Contracts;
 
-use Atom\DI\DIC;
+use Atom\DI\Container;
 use Atom\DI\Exceptions\ContainerException;
 
 interface StorageContract
 {
     /**
      * StorageContract constructor.
-     * @param DIC $container
+     * @param Container $container
      */
-    public function __construct(DIC $container);
+    public function __construct(Container $container);
 
     /**
      * check ig a value exists on the storage

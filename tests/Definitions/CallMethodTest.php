@@ -2,13 +2,13 @@
 
 namespace Atom\DI\Tests\Definitions;
 
+use Atom\DI\Container;
 use Atom\DI\Definitions\CallMethod;
-use Atom\DI\Definitions\Value;
 use Atom\DI\Extraction\ExtractionParameters\MethodExtractionParameter;
 use Atom\DI\Extraction\MethodExtractor;
 use Atom\DI\Tests\BaseTestCase;
 use Atom\DI\Tests\Misc\Dummy1;
-use InvalidArgumentException;
+use Atom\DI\Tests\Misc\Dummy3;
 
 class CallMethodTest extends BaseTestCase
 {
@@ -17,59 +17,31 @@ class CallMethodTest extends BaseTestCase
         return new CallMethod();
     }
 
-    public function testGetExtractionParameter()
-    {
-        $definition = $this->makeDefinition();
-        $definition->on($instance = new Dummy1());
-        $this->assertInstanceOf(MethodExtractionParameter::class, $definition->getExtractionParameter());
-        $this->assertEquals($instance, $definition->getExtractionParameter()->getClass());
-    }
-
-    public function testGetExtractionParameterThrowIfNoClassWasSpecified()
-    {
-        $definition = $this->makeDefinition();
-        $this->expectException(InvalidArgumentException::class);
-        $definition->getExtractionParameter();
-    }
-
-    public function testExtractorClassName()
-    {
-        $definition = $this->makeDefinition();
-        $this->assertEquals(MethodExtractor::class, $definition->getExtractorClassName());
-    }
-
     public function testOn()
     {
         $definition = $this->makeDefinition();
         $definition->on($instance = new Dummy1());
-        $this->assertEquals($instance, $definition->getExtractionParameter()->getClass());
+        $this->assertEquals($instance, $definition->getObject());
     }
 
-    public function testWithExtractionParameter()
+    public function testConstructor()
     {
-        $definition = $this->makeDefinition();
-        $extractionParameter = new MethodExtractionParameter("foo", "bar");
-        $definition->withExtractionParameter($extractionParameter);
-        $this->assertInstanceOf(MethodExtractionParameter::class, $definition->getExtractionParameter());
-        $this->assertEquals($extractionParameter, $definition->getExtractionParameter());
+        $def = new CallMethod();
+        $this->assertEquals($def->getMethod(), "__invoke");
+        $def = new CallMethod("getFoo", ["bar" => "baz"]);
+        $this->assertEquals("baz", $def->getParameter("bar"));
+        $this->assertEquals("getFoo", $def->getMethod());
     }
 
-    public function testWithParameter()
+    public function testInterpret()
     {
-        $definition = $this->makeDefinition();
-        $definition->on(new Dummy1());
-        $definition->withParameter("foo", $value1= new Value("bar"));
-        $definition->withParameter("bar", $value2= new Value("baz"));
-
-        $this->assertTrue($definition->getExtractionParameter()->getParameterMapping()->hasMappingFor('foo'));
-        $this->assertTrue($definition->getExtractionParameter()->getParameterMapping()->hasMappingFor('bar'));
-        $this->assertEquals(
-            $definition->getExtractionParameter()->getParameterMapping()->getMappingFor('foo')->getDefinition(),
-            $value1
-        );
-        $this->assertEquals(
-            $definition->getExtractionParameter()->getParameterMapping()->getMappingFor('bar')->getDefinition(),
-            $value2
-        );
+        $container = $this->getMockBuilder(Container::class)->getMock();
+        $container->expects($this->once())->method("callMethod")
+            ->with(Dummy3::class, $m = "getBar", $params = ["bar" => "baz"]);
+        $def = (new CallMethod($m, $params))->on(Dummy3::class);
+        $def->interpret($container);
+        $container = new Container();
+        $def = (new CallMethod("getBar", ["bar"=>"baz"]))->on(Dummy3::class);
+        $this->assertEquals($def->interpret($container), "baz");
     }
 }

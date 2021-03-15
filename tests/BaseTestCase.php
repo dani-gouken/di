@@ -1,7 +1,7 @@
 <?php
 namespace Atom\DI\Tests;
 
-use Atom\DI\DIC;
+use Atom\DI\Container;
 use PHPUnit\Framework\TestCase;
 
 class BaseTestCase extends TestCase
@@ -9,6 +9,6 @@ class BaseTestCase extends TestCase
 
     public function getContainer()
     {
-        return new DIC();
+        return new Container();
     }
 }

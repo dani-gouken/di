@@ -3,11 +3,11 @@
 
 namespace Atom\DI\Contracts;
 
-use Atom\DI\DIC;
+use Atom\DI\Container;
 
 interface ExtractorContract
 {
-    public function extract(ExtractionParameterContract $params, DIC $container);
+    public function extract(?ExtractionParameterContract $params, Container $container);
 
-    public function isValidExtractionParameter(ExtractionParameterContract $params);
+    public function isValidExtractionParameter(?ExtractionParameterContract $params);
 }

@@ -4,10 +4,12 @@
 namespace Atom\DI\Definitions;
 
 use Atom\DI\Contracts\DefinitionContract;
-use Atom\DI\Mapping\MappingItem;
 
 abstract class AbstractDefinition implements DefinitionContract
 {
+    protected $classesOverride = [];
+    protected $parametersOverride = [];
+
     /**
      * @var callable
      */
@@ -15,43 +17,59 @@ abstract class AbstractDefinition implements DefinitionContract
 
     /**
      * @param string $className
-     * @param DefinitionContract $definition
-     * @return AbstractDefinition
+     * @return mixed|null
      */
-    public function with(string $className, DefinitionContract $definition): self
+    public function getClass(string $className)
     {
-        $this->getExtractionParameter()
-            ->getObjectMapping()
-            ->add(new MappingItem($className, $definition));
+        return $this->classesOverride[$className] ?? null;
+    }
+
+    /**
+     * @param string $parameterName
+     * @return mixed|null
+     */
+    public function getParameter(string $parameterName)
+    {
+        return $this->parametersOverride[$parameterName] ?? null;
+    }
+
+    /**
+     * @param string $parameterName
+     * @param $value
+     * @return $this
+     */
+    public function withParameter(string $parameterName, $value): self
+    {
+        $this->parametersOverride[$parameterName] = $value;
         return $this;
     }
 
-    public function withBindings(array $bindings): self
+    /**
+     * @param string $className
+     * @param $value
+     * @return $this
+     */
+    public function withClass(string $className, $value): self
     {
-        foreach ($bindings as $name => $binding) {
-            $this->with($name, $binding);
+        $this->classesOverride[$className] = $value;
+        return $this;
+    }
+
+    /**
+     * @param array $classes
+     * @return $this
+     */
+    public function withClasses(array $classes): self
+    {
+        foreach ($classes as $class => $value) {
+            $this->withClass($class, $value);
         }
         return $this;
     }
 
     /**
-     * @param string $parameterName
-     * @param $definition
-     * @return AbstractDefinition
-     */
-    public function withParameter(string $parameterName, $definition): self
-    {
-        $this->getExtractionParameter()->getParameterMapping()
-            ->add(new MappingItem(
-                $parameterName,
-                $definition instanceof DefinitionContract ? $definition : new Value($definition)
-            ));
-        return $this;
-    }
-
-    /**
      * @param array $parameters
-     * @return AbstractDefinition
+     * @return $this
      */
     public function withParameters(array $parameters): self
     {

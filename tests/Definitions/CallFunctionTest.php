@@ -2,38 +2,47 @@
 
 namespace Atom\DI\Tests\Definitions;
 
+use Atom\DI\Container;
 use Atom\DI\Definitions\CallFunction;
-use Atom\DI\Extraction\ExtractionParameters\FunctionExtractionParameter;
-use Atom\DI\Extraction\FunctionExtractor;
 use Atom\DI\Tests\BaseTestCase;
+use function Atom\DI\Tests\Misc\returnDefaultValue;
 
 class CallFunctionTest extends BaseTestCase
 {
-    private function makeDefinition(array $params = []):CallFunction
+    private function makeDefinition(array $params = [], $callable = null): CallFunction
     {
-        return new CallFunction(function () {
-            return "foo";
+        return new CallFunction($callable ?? function () {
+                return "foo";
         }, $params);
     }
 
-    public function testGetExtractorClassName()
+    public function testConstructor()
     {
-        $this->assertEquals(FunctionExtractor::class, $this->makeDefinition()->getExtractorClassName());
+        $def = $this->makeDefinition(["foo" => "bar"], $c = function () {
+            return "bar";
+        });
+        $this->assertEquals("bar", $def->getParameter("foo"));
+        $this->assertEquals($c, $def->getCallable());
+        $this->assertEquals("bar", $c());
     }
 
-    public function testGetExtractionParameter()
+    public function testInterpret()
     {
-        $definition = $this->makeDefinition(["foo"=>"bar"]);
-        $this->assertInstanceOf(FunctionExtractionParameter::class, $definition->getExtractionParameter());
-        $this->assertEquals(["foo"=>"bar"], $definition->getExtractionParameter()->getParameters());
-    }
+        $c = function () {
+            return "bar";
+        };
+        $container = $this->getMockBuilder(Container::class)->getMock();
+        $container->expects($this->once())->method("callFunction")
+            ->with($c, $params = ["foo" => "bar"]);
 
-    public function testWithExtractionParameter()
-    {
-        $definition = $this->makeDefinition();
-        $extractionParameter = new FunctionExtractionParameter("foo");
-        $definition->withExtractionParameter($extractionParameter);
-        $this->assertInstanceOf(FunctionExtractionParameter::class, $definition->getExtractionParameter());
-        $this->assertEquals($extractionParameter, $definition->getExtractionParameter());
+        $def = $this->makeDefinition($params, $c);
+        $def->interpret($container);
+
+        $container = new Container();
+        $def = $this->makeDefinition(
+            ["defaultValue" => $default = "foobarbaz"],
+            "Atom\\DI\\Tests\\Misc\\returnDefaultValue"
+        );
+        $this->assertEquals($default, $def->interpret($container));
     }
 }

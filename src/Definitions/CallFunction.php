@@ -3,43 +3,40 @@
 
 namespace Atom\DI\Definitions;
 
-use Atom\DI\Contracts\ExtractionParameterContract;
-use Atom\DI\Extraction\ExtractionParameters\FunctionExtractionParameter;
-use Atom\DI\Extraction\FunctionExtractor;
+use Atom\DI\Container;
+use Atom\DI\Exceptions\CircularDependencyException;
+use Atom\DI\Exceptions\ContainerException;
+use Atom\DI\Exceptions\NotFoundException;
+use ReflectionException;
 
 class CallFunction extends AbstractDefinition
 {
-    /**
-     * @var FunctionExtractionParameter
-     */
-    private $parameter;
     private $callable;
 
     public function __construct($callable, array $parameters = [])
     {
-        $this->parameter = new FunctionExtractionParameter($callable, $parameters);
+        $this->parametersOverride = $parameters;
         $this->callable = $callable;
     }
 
     /**
-     * @return string
+     * @param Container $container
+     * @return mixed
+     * @throws CircularDependencyException
+     * @throws ContainerException
+     * @throws NotFoundException
+     * @throws ReflectionException
      */
-    public function getExtractorClassName(): string
+    public function interpret(Container $container)
     {
-        return FunctionExtractor::class;
+        return $container->callFunction($this->callable, $this->parametersOverride, $this->classesOverride);
     }
 
     /**
-     * @return FunctionExtractionParameter
+     * @return mixed
      */
-    public function getExtractionParameter(): ExtractionParameterContract
+    public function getCallable()
     {
-        return $this->parameter;
-    }
-
-    public function withExtractionParameter(FunctionExtractionParameter $extractionParameter): self
-    {
-        $this->parameter = $extractionParameter;
-        return $this;
+        return $this->callable;
     }
 }

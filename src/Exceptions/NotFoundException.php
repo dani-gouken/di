@@ -9,11 +9,7 @@ class NotFoundException extends Exception implements NotFoundExceptionInterface
 {
     public function __construct(string $key, ?StorageContract $storage = null)
     {
-        if ($storage) {
-            $message = "The container is unable to resolve [$key] using the storage [{$storage->getStorageKey()}]";
-        } else {
-            $message = "The container is unable to resolve [$key].";
-        }
+        $message = "The container is unable to resolve [$key].";
         parent::__construct($message);
     }
 }

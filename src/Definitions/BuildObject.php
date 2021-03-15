@@ -3,9 +3,11 @@
 
 namespace Atom\DI\Definitions;
 
-use Atom\DI\Contracts\ExtractionParameterContract;
-use Atom\DI\Extraction\ExtractionParameters\ObjectExtractionParameter;
-use Atom\DI\Extraction\ObjectExtractor;
+use Atom\DI\Container;
+use Atom\DI\Exceptions\CircularDependencyException;
+use Atom\DI\Exceptions\ContainerException;
+use Atom\DI\Exceptions\NotFoundException;
+use ReflectionException;
 
 class BuildObject extends AbstractDefinition
 {
@@ -15,52 +17,34 @@ class BuildObject extends AbstractDefinition
     private $className;
 
     /**
-     * @var ObjectExtractionParameter
-     */
-    private $extractionParameter;
-
-    /**
      * BuildObject constructor.
      * @param string $className
-     * @param array $constructorParameter
+     * @param array $parameters
      */
-    public function __construct(string $className, array $constructorParameter = [])
+    public function __construct(string $className, array $parameters = [])
     {
         $this->className = $className;
-        $this->extractionParameter = new ObjectExtractionParameter($className, $constructorParameter);
+        $this->parametersOverride = $parameters;
     }
 
-
+    /**
+     * @param Container $container
+     * @return mixed
+     * @throws CircularDependencyException
+     * @throws ContainerException
+     * @throws NotFoundException
+     * @throws ReflectionException
+     */
+    public function interpret(Container $container)
+    {
+        return $container->make($this->className, $this->parametersOverride, $this->classesOverride);
+    }
 
     /**
      * @return string
      */
-    public function getExtractorClassName(): string
+    public function getClassName(): string
     {
-        return ObjectExtractor::class;
-    }
-
-    /**
-     * @return ObjectExtractionParameter
-     */
-    public function getExtractionParameter(): ExtractionParameterContract
-    {
-        return $this->extractionParameter;
-    }
-
-    /**
-     * @param array $constructorParameter
-     * @return BuildObject
-     */
-    public function withConstructorParameters(array $constructorParameter): BuildObject
-    {
-        $this->extractionParameter->setConstructorArgs($constructorParameter);
-        return $this;
-    }
-
-    public function withExtractionParameter(ObjectExtractionParameter $extractionParameter): self
-    {
-        $this->extractionParameter = $extractionParameter;
-        return $this;
+        return $this->className;
     }
 }

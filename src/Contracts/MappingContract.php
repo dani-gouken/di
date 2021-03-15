@@ -13,9 +13,9 @@ interface MappingContract
 
     /**
      * @param string $key
-     * @return MappingItemContract
+     * @return DefinitionContract
      */
-    public function getMappingFor(string $key): MappingItemContract;
+    public function getMappingFor(string $key): DefinitionContract;
 
     /**
      * @param string $key
@@ -24,8 +24,8 @@ interface MappingContract
     public function hasMappingFor(string $key): bool;
 
     /**
-     * @param MappingItemContract $mappingItem
-     * @return bool
+     * @param string $key
+     * @param DefinitionContract $definition
      */
-    public function add(MappingItemContract $mappingItem);
+    public function add(string $key, DefinitionContract $definition);
 }

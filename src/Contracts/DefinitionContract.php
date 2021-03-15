@@ -3,13 +3,19 @@
 
 namespace Atom\DI\Contracts;
 
-use Nette\PhpGenerator\Method;
+use Atom\DI\Container;
 
 interface DefinitionContract
 {
-    public function getExtractorClassName(): string;
-
-    public function getExtractionParameter(): ExtractionParameterContract;
-
     public function getResolutionCallback(): ?callable;
+
+    public function getClass(string $className);
+
+    public function getParameter(string $parameterName);
+
+    public function withParameter(string $parameterName, $value);
+
+    public function withClass(string $className, $value);
+
+    public function interpret(Container $container);
 }

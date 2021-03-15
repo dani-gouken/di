@@ -3,10 +3,11 @@
 
 namespace Atom\DI\Definitions;
 
-use Nette\PhpGenerator\Method;
-use Atom\DI\Contracts\ExtractionParameterContract;
-use Atom\DI\Extraction\ContainerExtractor;
-use Atom\DI\Extraction\ExtractionParameters\ContainerExtractionParameter;
+use Atom\DI\Container;
+use Atom\DI\Exceptions\CircularDependencyException;
+use Atom\DI\Exceptions\ContainerException;
+use Atom\DI\Exceptions\NotFoundException;
+use ReflectionException;
 
 class Get extends AbstractDefinition
 {
@@ -14,40 +15,30 @@ class Get extends AbstractDefinition
      * @var string
      */
     private $key;
-    /**
-     * @var ContainerExtractionParameter
-     */
-    private $parameter;
 
     public function __construct(string $key)
     {
         $this->key = $key;
-        $this->parameter = new ContainerExtractionParameter($key);
     }
 
     /**
      * @return string
      */
-    public function getExtractorClassName(): string
+    public function getKey(): string
     {
-        return ContainerExtractor::class;
+        return $this->key;
     }
 
     /**
-     * @return ContainerExtractionParameter
+     * @param Container $container
+     * @return mixed
+     * @throws CircularDependencyException
+     * @throws ContainerException
+     * @throws NotFoundException
+     * @throws ReflectionException
      */
-    public function getExtractionParameter(): ExtractionParameterContract
+    public function interpret(Container $container)
     {
-        return $this->parameter;
-    }
-
-    /**
-     * @param ContainerExtractionParameter $parameter
-     * @return $this
-     */
-    public function withExtractionParameter(ContainerExtractionParameter $parameter): self
-    {
-        $this->parameter = $parameter;
-        return $this;
+        return $container->getDependency($this->getKey(), [], false);
     }
 }

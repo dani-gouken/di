@@ -3,46 +3,41 @@
 
 namespace Atom\DI\Tests\Definitions;
 
+use Atom\DI\Container;
 use Atom\DI\Definitions\BuildObject;
-use Atom\DI\Extraction\ExtractionParameters\ObjectExtractionParameter;
-use Atom\DI\Extraction\ObjectExtractor;
 use Atom\DI\Tests\BaseTestCase;
+use Atom\DI\Tests\Misc\Dummy2;
 
 class BuildObjectTest extends BaseTestCase
 {
     public function testItCanBeInstantiated()
     {
-        $this->assertInstanceOf(BuildObject::class, new BuildObject("foo"));
+        $this->assertInstanceOf(BuildObject::class, $obj = new BuildObject("foo", [
+            "foo" => "bar",
+            "bar" => "baz"
+        ]));
+        $this->assertEquals("bar", $obj->getParameter("foo"));
+        $this->assertEquals("baz", $obj->getParameter("bar"));
+        $this->assertEquals("foo", $obj->getClassName());
     }
 
-    public function testGetExtractorClassName()
+    public function testInterpret()
     {
-        $this->assertEquals(ObjectExtractor::class, (new BuildObject("foo"))->getExtractorClassName());
-    }
+        $container = $this->getMockBuilder(Container::class)->getMock();
+        $container->expects($this->once())->method("make")
+            ->with("foo", $params = ["foo" => "bar"], $classes = ["bar" => "baz"]);
 
-    public function testGetExtractionParameter()
-    {
-        $definition = new BuildObject("foo", ["bar" => "baz"]);
-        $this->assertInstanceOf(ObjectExtractionParameter::class, $definition->getExtractionParameter());
-        $this->assertEquals("foo", $definition->getExtractionParameter()->getClassName());
-        $this->assertEquals(["bar" => "baz"], $definition->getExtractionParameter()->getConstructorArgs());
-    }
+        $def = (new BuildObject("foo", $params))->withClasses($classes);
+        $def->interpret($container);
 
-    public function testWithExtractionParameters()
-    {
-        $definition = new BuildObject("foo", ["bar" => "baz"]);
-        $this->assertEquals("foo", $definition->getExtractionParameter()->getClassName());
-        $this->assertEquals(["bar" => "baz"], $definition->getExtractionParameter()->getConstructorArgs());
-        $definition->withExtractionParameter(new ObjectExtractionParameter("bar", ["foo" => "baz"]));
-        $this->assertEquals("bar", $definition->getExtractionParameter()->getClassName());
-        $this->assertEquals(["foo" => "baz"], $definition->getExtractionParameter()->getConstructorArgs());
-    }
-
-    public function testWithConstructorParameters()
-    {
-        $definition = new BuildObject("foo", ["bar" => "baz"]);
-        $this->assertEquals(["bar" => "baz"], $definition->getExtractionParameter()->getConstructorArgs());
-        $definition->withConstructorParameters(["foo" => "bar"]);
-        $this->assertEquals(["foo" => "bar"], $definition->getExtractionParameter()->getConstructorArgs());
+        $container = new Container();
+        $def = (new BuildObject(Dummy2::class, ["foo"=>"bar","bar"=>"baz"]));
+        /**
+         * @var Dummy2 $res
+         */
+        $res = $def->interpret($container);
+        $this->assertInstanceOf(Dummy2::class, $res);
+        $this->assertEquals("bar", $res->getFoo());
+        $this->assertEquals("baz", $res->getBar());
     }
 }

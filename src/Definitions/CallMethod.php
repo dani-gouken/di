@@ -3,11 +3,11 @@
 
 namespace Atom\DI\Definitions;
 
-use InvalidArgumentException;
-use Atom\DI\Contracts\ExtractionParameterContract;
-use Atom\DI\Extraction\ExtractionParameters\FunctionExtractionParameter;
-use Atom\DI\Extraction\ExtractionParameters\MethodExtractionParameter;
-use Atom\DI\Extraction\MethodExtractor;
+use Atom\DI\Container;
+use Atom\DI\Exceptions\CircularDependencyException;
+use Atom\DI\Exceptions\ContainerException;
+use Atom\DI\Exceptions\NotFoundException;
+use ReflectionException;
 
 class CallMethod extends AbstractDefinition
 {
@@ -19,58 +19,54 @@ class CallMethod extends AbstractDefinition
      * @var string
      */
     private $methodName;
-    /**
-     * @var array
-     */
-    private $parameter;
-
-    /**
-     * @var MethodExtractionParameter
-     */
-    private $extractionParameter;
 
     public function __construct(string $methodName = "__invoke", array $parameters = [])
     {
         $this->methodName = $methodName;
-        $this->parameter = $parameters;
-    }
-
-    /**
-     * @return MethodExtractionParameter
-     */
-    public function getExtractionParameter(): ExtractionParameterContract
-    {
-        if ($this->extractionParameter != null) {
-            return $this->extractionParameter;
-        }
-        if ($this->object == null) {
-            throw new InvalidArgumentException("You need to specify the object on which the method should be called");
-        }
-        $this->extractionParameter = new MethodExtractionParameter($this->object, $this->methodName, $this->parameter);
-        return $this->extractionParameter;
-    }
-
-    /**
-     * @return string
-     */
-    public function getExtractorClassName(): string
-    {
-        return MethodExtractor::class;
+        $this->parametersOverride = $parameters;
     }
 
     /**
      * @param $object
      * @return CallMethod
      */
-    public function on($object):self
+    public function on($object): self
     {
         $this->object = $object;
         return $this;
     }
 
-    public function withExtractionParameter(MethodExtractionParameter $extractionParameter): self
+    /**
+     * @return object|string
+     */
+    public function getObject()
     {
-        $this->extractionParameter = $extractionParameter;
-        return $this;
+        return $this->object;
+    }
+
+    /**
+     * @param Container $container
+     * @return mixed
+     * @throws CircularDependencyException
+     * @throws ContainerException
+     * @throws NotFoundException
+     * @throws ReflectionException
+     */
+    public function interpret(Container $container)
+    {
+        return $container->callMethod(
+            $this->getObject(),
+            $this->methodName,
+            $this->parametersOverride,
+            $this->classesOverride
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        return $this->methodName;
     }
 }
