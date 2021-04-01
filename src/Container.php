@@ -21,12 +21,12 @@ class Container implements ContainerInterface, ArrayAccess
 {
     use ParameterResolverTrait;
 
-    private $resolved = [];
+    private array $resolved = [];
 
     /**
      * @var array<string,BindingContract>
      */
-    private $mapping = [];
+    private array $mapping = [];
 
     /**
      * @var callable
@@ -35,16 +35,12 @@ class Container implements ContainerInterface, ArrayAccess
     /**
      * @var array<string,callable>
      */
-    private $resolutionCallback = [];
-    /**
-     * @var $instance Container
-     */
-    private static $instance;
+    private array $resolutionCallback = [];
 
     /**
      * @var ResolutionStack
      */
-    private $resolutionStack;
+    private ResolutionStack $resolutionStack;
 
     /**
      * Container constructor.
@@ -57,23 +53,39 @@ class Container implements ContainerInterface, ArrayAccess
 
     /**
      * @param array<string>|string $aliases
-     * @param DefinitionContract|null $definition
+     * @param DefinitionContract|null|mixed $definition
      * @return Binding |BindingContract
      * @throws MultipleBindingException
      */
-    public function bind($aliases, ?DefinitionContract $definition = null): BindingContract
+    public function bind($aliases, $definition = null): BindingContract
     {
-        $binding = new Binding($definition);
-        if (is_string($aliases)) {
-            if ((is_null($definition))) {
-                $binding->toInstanceOf($aliases);
-            }
-            $aliases = [$aliases];
+        if (is_null($definition) && is_string($aliases)) {
+            $definition = Definition::newInstanceOf($aliases);
         }
+        if ((is_object($definition) &&
+                !($definition instanceof DefinitionContract)) || is_scalar($definition)) {
+            $definition = Definition::value($definition);
+        }
+        $aliases = is_string($aliases) ? [$aliases] : $aliases;
+        $binding = new Binding($definition);
         foreach ($aliases as $alias) {
             $this->registerBinding($alias, $binding);
         }
         return $binding;
+    }
+
+    /**
+     * @param $aliases
+     * @param DefinitionContract|null $definition
+     * @return BindingContract
+     */
+    public function bindIfNotAvailable($aliases, ?DefinitionContract $definition = null): BindingContract
+    {
+        try {
+            return $this->bind($aliases, $definition);
+        } catch (MultipleBindingException $exception) {
+            return $this->getBinding($exception->getAlias());
+        }
     }
 
     /**

@@ -57,6 +57,21 @@ class ContainerTest extends BaseTestCase
         $this->assertEquals("foo", $binding->getDefinition()->getClassName());
 
         $container = $this->getContainer();
+        $binding = $container->bind("foo", "bar");
+        $this->assertInstanceOf(Value::class, $binding->getDefinition());
+        $this->assertEquals("bar", $binding->getDefinition()->getValue());
+
+        $container = $this->getContainer();
+        $binding = $container->bind("foo", $obj = new Dummy1());
+        $this->assertInstanceOf(Value::class, $binding->getDefinition());
+        $this->assertEquals($obj, $binding->getDefinition()->getValue());
+
+        $container = $this->getContainer();
+        $binding = $container->bind("foo", 42);
+        $this->assertInstanceOf(Value::class, $binding->getDefinition());
+        $this->assertEquals(42, $binding->getDefinition()->getValue());
+
+        $container = $this->getContainer();
         $container->bind(["foo", "bar"])->toValue(42);
         $this->assertEquals(42, $container->get("foo"));
         $this->assertEquals(42, $container->get("bar"));
@@ -71,6 +86,24 @@ class ContainerTest extends BaseTestCase
         $this->assertTrue($binding->isSingleton());
     }
 
+    /**
+     * @throws MultipleBindingException
+     */
+    public function testBindIfNotAvailable()
+    {
+        $container = $this->getContainer();
+        $binding = $container->bind("foo");
+        $this->assertInstanceOf(BindingContract::class, $binding);
+        $this->assertInstanceOf(Binding::class, $binding);
+        $this->assertInstanceOf(BuildObject::class, $binding->getDefinition());
+        $this->assertEquals("foo", $binding->getDefinition()->getClassName());
+
+        $this->assertEquals($container->bindIfNotAvailable("foo"), $binding);
+    }
+
+    /**
+     * @throws MultipleBindingException
+     */
     public function testItThrowsOnMultipleBinding()
     {
         $container = $this->getContainer();
@@ -78,6 +111,7 @@ class ContainerTest extends BaseTestCase
         $container->bind("foo");
         $container->bind("foo");
     }
+
     public function testAliasWhenItThrowsOnMultipleBinding()
     {
         $container = $this->getContainer();

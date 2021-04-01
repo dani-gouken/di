@@ -20,7 +20,7 @@ class Binding implements BindingContract
     /**
      * @var string
      */
-    private $scope = null;
+    private ?string $scope = null;
 
     public function __construct(?DefinitionContract $definition = null)
     {

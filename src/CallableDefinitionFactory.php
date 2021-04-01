@@ -9,7 +9,7 @@ use Atom\DI\Definitions\CallMethod;
 
 class CallableDefinitionFactory
 {
-    private $parameters;
+    private array $parameters;
     private $callable;
 
     public function __construct($callable, array $parameters = [])

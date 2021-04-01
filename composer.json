@@ -5,6 +5,7 @@
     "license": "MIT",
     "type": "library",
     "require": {
+        "php": "^7.4|8.*",
         "psr/container": "^1.0"
     },
     "require-dev": {
