@@ -70,7 +70,7 @@ class Container implements ContainerInterface, ArrayAccess
         $aliases = is_string($aliases) ? [$aliases] : $aliases;
         $binding = new Binding($definition);
         foreach ($aliases as $alias) {
-            $this->registerBinding($alias, $binding);
+            $this->registerBinding($alias, $binding, $skipIfExists);
         }
         return $binding;
     }
@@ -79,14 +79,11 @@ class Container implements ContainerInterface, ArrayAccess
      * @param $aliases
      * @param DefinitionContract|null|mixed $definition
      * @return BindingContract
+     * @throws MultipleBindingException
      */
     public function bindIfNotAvailable($aliases, $definition = null): BindingContract
     {
-        try {
-            return $this->bind($aliases, $definition);
-        } catch (MultipleBindingException $exception) {
-            return $this->getBinding($exception->getAlias());
-        }
+        return $this->bind($aliases, $definition, true);
     }
 
     /**
