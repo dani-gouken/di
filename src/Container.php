@@ -54,10 +54,11 @@ class Container implements ContainerInterface, ArrayAccess
     /**
      * @param array<string>|string $aliases
      * @param DefinitionContract|null|mixed $definition
+     * @param bool $skipIfExists
      * @return Binding |BindingContract
      * @throws MultipleBindingException
      */
-    public function bind($aliases, $definition = null): BindingContract
+    public function bind($aliases, $definition = null, bool $skipIfExists = false): BindingContract
     {
         if (is_null($definition) && is_string($aliases)) {
             $definition = Definition::newInstanceOf($aliases);
@@ -76,10 +77,10 @@ class Container implements ContainerInterface, ArrayAccess
 
     /**
      * @param $aliases
-     * @param DefinitionContract|null $definition
+     * @param DefinitionContract|null|mixed $definition
      * @return BindingContract
      */
-    public function bindIfNotAvailable($aliases, ?DefinitionContract $definition = null): BindingContract
+    public function bindIfNotAvailable($aliases, $definition = null): BindingContract
     {
         try {
             return $this->bind($aliases, $definition);
@@ -345,13 +346,17 @@ class Container implements ContainerInterface, ArrayAccess
     /**
      * @param string $alias
      * @param BindingContract $binding
+     * @param bool $skipIfExists
      * @throws MultipleBindingException
      */
-    private function registerBinding(string $alias, BindingContract $binding)
+    private function registerBinding(string $alias, BindingContract $binding, bool $skipIfExists = false)
     {
         if ($this->has($alias)) {
-            throw new MultipleBindingException($alias);
+            if (!$skipIfExists) {
+                throw new MultipleBindingException($alias);
+            }
+        } else {
+            $this->mapping[$alias] = $binding;
         }
-        $this->mapping[$alias] = $binding;
     }
 }
