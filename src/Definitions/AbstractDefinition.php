@@ -7,11 +7,18 @@ use Atom\DI\Contracts\DefinitionContract;
 
 abstract class AbstractDefinition implements DefinitionContract
 {
+    /**
+     * @var array<string,mixed>
+     */
     protected $classesOverride = [];
+
+    /**
+     * @var array<string,mixed>
+     */
     protected $parametersOverride = [];
 
     /**
-     * @var callable
+     * @var ?callable
      */
     protected $resolutionCallback;
 
@@ -19,7 +26,7 @@ abstract class AbstractDefinition implements DefinitionContract
      * @param string $className
      * @return mixed|null
      */
-    public function getClass(string $className)
+    public function getClass(string $className): mixed
     {
         return $this->classesOverride[$className] ?? null;
     }
@@ -28,7 +35,7 @@ abstract class AbstractDefinition implements DefinitionContract
      * @param string $parameterName
      * @return mixed|null
      */
-    public function getParameter(string $parameterName)
+    public function getParameter(string $parameterName): mixed
     {
         return $this->parametersOverride[$parameterName] ?? null;
     }
@@ -38,7 +45,7 @@ abstract class AbstractDefinition implements DefinitionContract
      * @param $value
      * @return $this
      */
-    public function withParameter(string $parameterName, $value): self
+    public function withParameter(string $parameterName, mixed $value): self
     {
         $this->parametersOverride[$parameterName] = $value;
         return $this;
@@ -49,14 +56,14 @@ abstract class AbstractDefinition implements DefinitionContract
      * @param $value
      * @return $this
      */
-    public function withClass(string $className, $value): self
+    public function withClass(string $className, mixed $value): self
     {
         $this->classesOverride[$className] = $value;
         return $this;
     }
 
     /**
-     * @param array $classes
+     * @param array<string,mixed> $classes
      * @return $this
      */
     public function withClasses(array $classes): self
@@ -68,7 +75,7 @@ abstract class AbstractDefinition implements DefinitionContract
     }
 
     /**
-     * @param array $parameters
+     * @param array<string,mixed> $parameters
      * @return $this
      */
     public function withParameters(array $parameters): self

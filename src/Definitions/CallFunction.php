@@ -11,9 +11,10 @@ use ReflectionException;
 
 class CallFunction extends AbstractDefinition
 {
-    private $callable;
-
-    public function __construct($callable, array $parameters = [])
+    /**
+     * @param array<string,mixed> $parameters
+     */
+    public function __construct(private \Closure|string $callable, array $parameters = [])
     {
         $this->parametersOverride = $parameters;
         $this->callable = $callable;
@@ -27,15 +28,12 @@ class CallFunction extends AbstractDefinition
      * @throws NotFoundException
      * @throws ReflectionException
      */
-    public function interpret(Container $container)
+    public function interpret(Container $container): mixed
     {
         return $container->callFunction($this->callable, $this->parametersOverride, $this->classesOverride);
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCallable()
+    public function getCallable(): \Closure|string
     {
         return $this->callable;
     }

@@ -21,5 +21,5 @@ interface BindingContract
      */
     public function getScope(): string;
 
-    public function getValue(string $alias, Container $container);
+    public function getValue(string $alias, Container $container): mixed;
 }

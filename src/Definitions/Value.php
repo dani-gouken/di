@@ -7,14 +7,12 @@ use Atom\DI\Container;
 
 class Value extends AbstractDefinition
 {
-    private $value;
-
-    public function __construct($value)
+    public function __construct(private mixed $value)
     {
         $this->value = $value;
     }
 
-    public function interpret(Container $container)
+    public function interpret(Container $container): mixed
     {
         return $this->value;
     }
@@ -22,7 +20,7 @@ class Value extends AbstractDefinition
     /**
      * @return mixed
      */
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->value;
     }

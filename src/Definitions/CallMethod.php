@@ -4,6 +4,7 @@
 namespace Atom\DI\Definitions;
 
 use Atom\DI\Container;
+use Atom\DI\Contracts\DefinitionContract;
 use Atom\DI\Exceptions\CircularDependencyException;
 use Atom\DI\Exceptions\ContainerException;
 use Atom\DI\Exceptions\NotFoundException;
@@ -12,34 +13,34 @@ use ReflectionException;
 class CallMethod extends AbstractDefinition
 {
     /**
-     * @var object
+     * @var DefinitionContract|object|class-string $object
      */
-    private $object;
-    /**
-     * @var string
-     */
-    private $methodName;
+    private object|string $object;
 
-    public function __construct(string $methodName = "__invoke", array $parameters = [])
-    {
-        $this->methodName = $methodName;
-        $this->parametersOverride = $parameters;
+    /**
+     * @param array<string,mixed> $parametersOverride
+     */
+    public function __construct(
+        private string $methodName = "__invoke",
+        array $parametersOverride = []
+    ) {
+        $this->parametersOverride = $parametersOverride;
     }
 
     /**
-     * @param $object
+     * @param DefinitionContract|object|class-string $object
      * @return CallMethod
      */
-    public function on($object): self
+    public function on(object|string $object): self
     {
         $this->object = $object;
         return $this;
     }
 
     /**
-     * @return object|string
+     * @return object|class-string|DefinitionContract
      */
-    public function getObject()
+    public function getObject(): object|string
     {
         return $this->object;
     }
@@ -52,7 +53,7 @@ class CallMethod extends AbstractDefinition
      * @throws NotFoundException
      * @throws ReflectionException
      */
-    public function interpret(Container $container)
+    public function interpret(Container $container): mixed
     {
         return $container->callMethod(
             $this->getObject(),

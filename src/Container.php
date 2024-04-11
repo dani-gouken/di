@@ -5,6 +5,7 @@ namespace Atom\DI;
 use ArrayAccess;
 use Atom\DI\Contracts\BindingContract;
 use Atom\DI\Contracts\DefinitionContract;
+use Atom\DI\Definitions\Value;
 use Atom\DI\Exceptions\CircularDependencyException;
 use Atom\DI\Exceptions\ContainerException;
 use Atom\DI\Exceptions\MultipleBindingException;
@@ -17,10 +18,14 @@ use ReflectionException;
 use ReflectionFunction;
 use ReflectionMethod;
 
+
 class Container implements ContainerInterface, ArrayAccess
 {
     use ParameterResolverTrait;
 
+    /**
+     * @var array<string,mixed>
+     */
     private array $resolved = [];
 
     /**
@@ -57,17 +62,21 @@ class Container implements ContainerInterface, ArrayAccess
      * @return Binding |BindingContract
      * @throws MultipleBindingException
      */
-    public function bind($aliases, $definition = null): BindingContract
+    public function bind($aliases, $definition = null, string $scope = BindingContract::SCOPE_SINGLETON): BindingContract
     {
         if (is_null($definition) && is_string($aliases)) {
+            /** @var class-string $aliases **/
             $definition = Definition::newInstanceOf($aliases);
         }
-        if ((is_object($definition) &&
-                !($definition instanceof DefinitionContract)) || is_scalar($definition)) {
+        if (
+            (is_object($definition) &&
+                !($definition instanceof DefinitionContract)) || is_scalar($definition)
+        ) {
             $definition = Definition::value($definition);
         }
         $aliases = is_string($aliases) ? [$aliases] : $aliases;
-        $binding = new Binding($definition);
+        /** @var DefinitionContract|null $definition **/
+        $binding = new Binding($definition, scope: $scope);
         foreach ($aliases as $alias) {
             $this->registerBinding($alias, $binding);
         }
@@ -75,7 +84,7 @@ class Container implements ContainerInterface, ArrayAccess
     }
 
     /**
-     * @param $aliases
+     * @param array<string> $aliases
      * @param DefinitionContract|null $definition
      * @return BindingContract
      */
@@ -84,24 +93,24 @@ class Container implements ContainerInterface, ArrayAccess
         try {
             return $this->bind($aliases, $definition);
         } catch (MultipleBindingException $exception) {
-            return $this->getBinding($exception->getAlias());
+            return $this->getBinding($exception->alias);
         }
     }
 
     /**
-     * @param $aliases
+     * @param array<string>|string $aliases
      * @return BindingContract|Binding
      * @throws MultipleBindingException
      */
     public function prototype($aliases): BindingContract
     {
-        return $this->bind($aliases)->prototype();
+        return $this->bind($aliases, scope: BindingContract::SCOPE_PROTOTYPE);
     }
 
     /**
      * Return a value store inside the container
      * @param $id
-     * @param array $args
+     * @param array<string,mixed> $args
      * @param bool $makeIfNotAvailable
      * @return mixed|void
      * @throws CircularDependencyException
@@ -120,9 +129,9 @@ class Container implements ContainerInterface, ArrayAccess
     /**
      * Return a value store inside de container
      * @param string $alias
-     * @param array $args
+     * @param array<string,mixed> $args
      * @param bool $makeIfNotAvailable
-     * @return mixed|void
+     * @return mixed
      * @throws CircularDependencyException
      * @throws ContainerException
      * @throws NotFoundException
@@ -138,7 +147,8 @@ class Container implements ContainerInterface, ArrayAccess
         if ($this->has($alias)) {
             $result = $this->getBinding($alias)->getValue($alias, $this);
         } elseif ($makeIfNotAvailable) {
-            $result = $this->make($alias, is_array($args) ? $args : [$args], []);
+            /** @var class-string $alias **/
+            $result = $this->make($alias, $args, []);
         } else {
             throw new NotFoundException($alias);
         }
@@ -152,7 +162,7 @@ class Container implements ContainerInterface, ArrayAccess
         return $result;
     }
 
-    public function addResolvedValue(string $alias, $value)
+    public function addResolvedValue(string $alias, mixed $value): void
     {
         $this->resolved[$alias] = $value;
     }
@@ -182,10 +192,10 @@ class Container implements ContainerInterface, ArrayAccess
 
     /**
      * check if the container can build the object that has the given alias
-     * @param $id
+     * @param string $id
      * @return bool
      */
-    public function remove($id): bool
+    public function remove(string $id): bool
     {
         if (!$this->has($id)) {
             return false;
@@ -195,10 +205,11 @@ class Container implements ContainerInterface, ArrayAccess
     }
 
     /**
-     * @param string $className
-     * @param array $params
-     * @param array $classes
-     * @return mixed
+     * @template T of object
+     * @param class-string<T> $className
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $classes
+     * @return object|T
      * @throws CircularDependencyException
      * @throws ContainerException
      * @throws NotFoundException
@@ -206,11 +217,11 @@ class Container implements ContainerInterface, ArrayAccess
      */
     public function make(string $className, array $params = [], $classes = [])
     {
-        try {
-            $reflectedClass = new ReflectionClass($className);
-        } catch (Exception $e) {
-            throw new ContainerException("Unable to resolve the class [$className]");
+        if (!class_exists($className)) {
+            throw new ContainerException("The class [$className] does not exists");
         }
+
+        $reflectedClass = new ReflectionClass($className);
         if (!$reflectedClass->isInstantiable()) {
             throw new ContainerException("The class [$className] is not instantiable");
         }
@@ -228,42 +239,48 @@ class Container implements ContainerInterface, ArrayAccess
     }
 
     /**
-     * @param callable|string $function
-     * @param array $parameters
-     * @param array $classes
+     * @param \Closure|string $function
+     * @param array<string,mixed> $parameters
+     * @param array<string,mixed> $classes
      * @return mixed
      * @throws CircularDependencyException
      * @throws ContainerException
      * @throws NotFoundException
      * @throws ReflectionException
      */
-    public function callFunction($function, array $parameters = [], array $classes = [])
+    public function callFunction($function, array $parameters = [], array $classes = []): mixed
     {
         $reflectedFunction = new ReflectionFunction($function);
         $closure = $reflectedFunction->getClosure();
+        if ($closure == null) {
+            throw new ContainerException("failed to load closure");
+        }
         $params = $this->getFunctionParameters($reflectedFunction, $this, $parameters, $classes);
         return call_user_func_array($closure, $params);
     }
 
     /**
-     * @param $object
+     * @template T
+     * @param DefinitionContract|class-string<T>|object $object
      * @param string $method
-     * @param array $parameters
-     * @param array $classes
+     * @param array<string,mixed> $parameters
+     * @param array<string,mixed> $classes
      * @return mixed
      * @throws CircularDependencyException
      * @throws ContainerException
      * @throws NotFoundException
      * @throws ReflectionException
      */
-    public function callMethod($object, string $method = "__invoke", array $parameters = [], array $classes = [])
+    public function callMethod(string|object $object, string $method = "__invoke", array $parameters = [], array $classes = [])
     {
         if ($object instanceof DefinitionContract) {
             $object = $this->interpret($object);
         }
+        /** @var class-string $object */
         if (is_string($object)) {
             $object = $this->make($object);
         }
+        /** @var object $object */
         $reflectedMethod = new ReflectionMethod($object, $method);
         $methodParams = $this->getFunctionParameters($reflectedMethod, $this, $parameters, $classes);
         return $reflectedMethod->invokeArgs($object, $methodParams);
@@ -277,21 +294,21 @@ class Container implements ContainerInterface, ArrayAccess
         return $this->resolutionStack;
     }
 
-    public function resolved($key, ?callable $callback = null)
+    public function resolved(string|callable $key, ?callable $callback = null): void
     {
         if (($callback != null && !is_string($key)) || (is_null($callback) && !is_callable($key))) {
             throw new InvalidArgumentException("The resolution callback must be a valid callable");
         }
-        if ($callback == null) {
+        if ($callback == null && is_callable($key)) {
             $this->globalResolutionCallback = $key;
-        } else {
+        } else if (is_string($key) && !is_null($callback)) {
             $this->resolutionCallback[$key] = $callback;
         }
     }
 
     /**
      * @param string $alias
-     * @return Binding
+     * @return BindingContract|Binding
      */
     private function getBinding(string $alias): BindingContract
     {
@@ -299,7 +316,7 @@ class Container implements ContainerInterface, ArrayAccess
     }
 
     /**
-     * @param mixed $offset
+     * @param string $offset
      * @return bool
      */
     public function offsetExists($offset): bool
@@ -308,36 +325,36 @@ class Container implements ContainerInterface, ArrayAccess
     }
 
     /**
-     * @param mixed $offset
+     * @param string $offset
      * @return mixed|void
      * @throws CircularDependencyException
      * @throws ContainerException
      * @throws NotFoundException
      * @throws ReflectionException
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->get($offset);
     }
 
     /**
-     * @param mixed $offset
+     * @param string $offset
      * @param mixed $value
      * @throws MultipleBindingException
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if ($value instanceof DefinitionContract) {
             $this->bind($offset, $value);
         } else {
-            $this->bind($offset)->toValue($value);
+            $this->bind($offset, new Value($value));
         }
     }
 
     /**
-     * @param mixed $offset
+     * @param string $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->remove($offset);
     }
@@ -347,7 +364,7 @@ class Container implements ContainerInterface, ArrayAccess
      * @param BindingContract $binding
      * @throws MultipleBindingException
      */
-    private function registerBinding(string $alias, BindingContract $binding)
+    private function registerBinding(string $alias, BindingContract $binding): void
     {
         if ($this->has($alias)) {
             throw new MultipleBindingException($alias);

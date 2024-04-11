@@ -9,13 +9,13 @@ interface DefinitionContract
 {
     public function getResolutionCallback(): ?callable;
 
-    public function getClass(string $className);
+    public function getClass(string $className): mixed;
 
-    public function getParameter(string $parameterName);
+    public function getParameter(string $parameterName): mixed;
 
-    public function withParameter(string $parameterName, $value);
+    public function withParameter(string $parameterName, mixed $value): self;
 
-    public function withClass(string $className, $value);
+    public function withClass(string $className, mixed $value): self;
 
-    public function interpret(Container $container);
+    public function interpret(Container $container): mixed;
 }

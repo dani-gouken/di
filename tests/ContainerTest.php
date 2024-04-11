@@ -119,7 +119,7 @@ class ContainerTest extends BaseTestCase
             $container->bind("foo");
             $container->bind("foo");
         } catch (MultipleBindingException $e) {
-            $this->assertEquals("foo", $e->getAlias());
+            $this->assertEquals("foo", $e->alias);
         }
     }
 

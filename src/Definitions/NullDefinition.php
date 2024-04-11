@@ -8,7 +8,7 @@ use Atom\DI\Container;
 class NullDefinition extends AbstractDefinition
 {
 
-    public function interpret(Container $container)
+    public function interpret(Container $container): null
     {
         return null;
     }

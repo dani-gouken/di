@@ -22,9 +22,10 @@ class Binding implements BindingContract
      */
     private ?string $scope = null;
 
-    public function __construct(?DefinitionContract $definition = null)
+    public function __construct(?DefinitionContract $definition = null, string $scope = BindingContract::SCOPE_SINGLETON)
     {
         $this->definition = $definition ?? new NullDefinition();
+        $this->scope = $scope;
     }
 
 
@@ -35,7 +36,7 @@ class Binding implements BindingContract
 
     public function getScope(): string
     {
-        return $this->scope ?? self::SCOPE_SINGLETON;
+        return $this->scope ?? static::SCOPE_SINGLETON;
     }
 
     private function hasScope(): bool
@@ -45,27 +46,24 @@ class Binding implements BindingContract
 
     private function setScope(string $scope): Binding
     {
-        if ($this->hasScope()) {
-            throw new RuntimeException("this definitions already has a scope({$this->scope})");
-        }
         $this->scope = $scope;
         return $this;
     }
 
     public function singleton(): Binding
     {
-        return $this->setScope(self::SCOPE_SINGLETON);
+        return $this->setScope(static::SCOPE_SINGLETON);
     }
 
 
     public function prototype(): Binding
     {
-        return $this->setScope(self::SCOPE_PROTOTYPE);
+        return $this->setScope(static::SCOPE_PROTOTYPE);
     }
 
     public function isSingleton(): bool
     {
-        return $this->getScope() == self::SCOPE_SINGLETON;
+        return $this->getScope() == static::SCOPE_SINGLETON;
     }
 
     /**
@@ -73,7 +71,7 @@ class Binding implements BindingContract
      * @param Container $container
      * @return mixed|null
      */
-    public function getValue(string $alias, Container $container)
+    public function getValue(string $alias, Container $container): mixed
     {
         $result = $container->interpret($this->getDefinition());
         if ($this->isSingleton()) {
@@ -83,36 +81,40 @@ class Binding implements BindingContract
     }
 
     /**
-     * @param string $className
-     * @param array $constructorParameters
-     * @return DefinitionContract|BuildObject
+     * @template T of object
+     * @param class-string<T> $className
+     * @param array<string,mixed> $constructorParameters
+     * @return DefinitionContract|BuildObject<T>
      */
-    public function toInstanceOf(string $className, $constructorParameters = []): BuildObject
+    public function toInstanceOf(string $className, array $constructorParameters = []): DefinitionContract
     {
         return $this->setDefinition(Definition::newInstanceOf($className, $constructorParameters));
     }
 
     /**
-     * @param array $constructorParameters
+     * @param array<string,mixed> $constructorParameters
      * @return BuildObject|DefinitionContract
      */
-    public function toNewInstance($constructorParameters = []): BuildObject
+    public function toNewInstance($constructorParameters = []): DefinitionContract
     {
-        return $this->definition->withParameters($constructorParameters);
+        foreach ($constructorParameters as $alias => $value) {
+            $this->definition =  $this->definition->withParameter($alias, $value);
+        }
+        return $this->definition;
     }
 
     /**
      * @param mixed $value
-     * @return DefinitionContract|Value
      */
-    public function toValue($value): Value
+    public function toValue(mixed $value): Value
     {
-        return $this->setDefinition(Definition::value($value));
+        $definition = Definition::value($value);
+        $this->setDefinition($definition);
+        return $definition;
     }
 
     /**
      * @param object $value
-     * @return Value|DefinitionContract
      */
     public function toObject(object $value): Value
     {
@@ -121,19 +123,18 @@ class Binding implements BindingContract
 
     /**
      * @param string $method
-     * @param array $parameters
+     * @param array<string,mixed> $parameters
      * @return Definitions\CallMethod|DefinitionContract
      */
-    public function toMethod(string $method, array $parameters = []): Definitions\CallMethod
+    public function toMethod(string $method, array $parameters = []): DefinitionContract
     {
         return $this->setDefinition(Definition::callTo($method, $parameters)->method());
     }
 
     /**
-     * @param $function
      * @return Definitions\CallFunction|DefinitionContract
      */
-    public function toFunction($function): Definitions\CallFunction
+    public function toFunction(\Closure|string|callable $function): DefinitionContract
     {
         return $this->setDefinition(Definition::callTo($function)->function());
     }

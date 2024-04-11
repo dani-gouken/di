@@ -10,18 +10,22 @@ use Atom\DI\Exceptions\NotFoundException;
 use ReflectionException;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
+use ReflectionNamedType;
 use ReflectionParameter;
 
 trait ParameterResolverTrait
 {
+    /**
+     * @var array<string, mixed>
+     */
     protected $resolvedClassParameters = [];
 
     /**
      * @param ReflectionFunctionAbstract $method
      * @param ReflectionParameter $parameter
      * @param Container $container
-     * @param array $parameters
-     * @param array $classes
+     * @param array<string,mixed> $parameters
+     * @param array<string,mixed> $classes
      * @return mixed
      * @throws CircularDependencyException
      * @throws ContainerException
@@ -34,7 +38,7 @@ trait ParameterResolverTrait
         Container $container,
         array $parameters = [],
         array $classes = []
-    ) {
+    ): mixed {
         $paramName = $parameter->name;
         if (array_key_exists($paramName, $parameters)) {
             return $this->getOverrideValue($container, $parameters[$paramName]);
@@ -64,10 +68,10 @@ trait ParameterResolverTrait
 
     /**
      * @param Container $container
-     * @param $override
+     * @param DefinitionContract|mixed $override
      * @return mixed
      */
-    private function getOverrideValue(Container $container, $override)
+    private function getOverrideValue(Container $container, $override): mixed
     {
         if ($override instanceof DefinitionContract) {
             return $container->interpret($override);
@@ -80,9 +84,9 @@ trait ParameterResolverTrait
      *
      * @param ReflectionFunctionAbstract $method
      * @param Container $container
-     * @param array $parameters
-     * @param array $classes
-     * @return array
+     * @param array<string,mixed> $parameters
+     * @param array<string,mixed> $classes
+     * @return array<string,mixed>
      * @throws CircularDependencyException
      * @throws ContainerException
      * @throws NotFoundException
@@ -112,14 +116,17 @@ trait ParameterResolverTrait
      * return ReflectionParameter ClassName
      *
      * @param ReflectionParameter $param
-     * @return String|null
+     * @return string|null
      */
     private function getParameterClassName(ReflectionParameter $param): ?string
     {
-        $paramClass = $param->getClass();
-        if (is_null($paramClass)) {
+        $type = $param->getType();
+        if (is_null($type)) {
             return null;
         }
-        return $paramClass->getName();
+        if (!$type instanceof ReflectionNamedType) {
+            return null;
+        }
+        return $type->getName();
     }
 }

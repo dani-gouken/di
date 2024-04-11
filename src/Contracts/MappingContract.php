@@ -27,5 +27,5 @@ interface MappingContract
      * @param string $key
      * @param DefinitionContract $definition
      */
-    public function add(string $key, DefinitionContract $definition);
+    public function add(string $key, DefinitionContract $definition): void;
 }

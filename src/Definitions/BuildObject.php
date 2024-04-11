@@ -9,17 +9,20 @@ use Atom\DI\Exceptions\ContainerException;
 use Atom\DI\Exceptions\NotFoundException;
 use ReflectionException;
 
+/**
+ * @template T of object
+ */
 class BuildObject extends AbstractDefinition
 {
     /**
-     * @var string
+     * @var class-string<T>
      */
     private $className;
 
     /**
      * BuildObject constructor.
-     * @param string $className
-     * @param array $parameters
+     * @param class-string<T> $className
+     * @param array<string, mixed> $parameters
      */
     public function __construct(string $className, array $parameters = [])
     {
@@ -29,19 +32,19 @@ class BuildObject extends AbstractDefinition
 
     /**
      * @param Container $container
-     * @return mixed
+     * @return T|mixed
      * @throws CircularDependencyException
      * @throws ContainerException
      * @throws NotFoundException
      * @throws ReflectionException
      */
-    public function interpret(Container $container)
+    public function interpret(Container $container): mixed
     {
         return $container->make($this->className, $this->parametersOverride, $this->classesOverride);
     }
 
     /**
-     * @return string
+     * @return class-string<T>
      */
     public function getClassName(): string
     {

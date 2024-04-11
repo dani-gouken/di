@@ -37,7 +37,7 @@ class Get extends AbstractDefinition
      * @throws NotFoundException
      * @throws ReflectionException
      */
-    public function interpret(Container $container)
+    public function interpret(Container $container): mixed
     {
         return $container->getDependency($this->getKey(), [], false);
     }

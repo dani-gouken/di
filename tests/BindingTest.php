@@ -5,6 +5,7 @@ namespace Atom\DI\Tests;
 
 use Atom\DI\Binding;
 use Atom\DI\Container;
+use Atom\DI\Contracts\BindingContract;
 use Atom\DI\Definitions\BuildObject;
 use Atom\DI\Definitions\CallFunction;
 use Atom\DI\Definitions\CallMethod;
@@ -27,15 +28,13 @@ class BindingTest extends BaseTestCase
     public function testScope()
     {
         $binding = new Binding();
-        $this->assertEquals(Binding::SCOPE_SINGLETON, $binding->getScope());
+        $this->assertEquals(BindingContract::SCOPE_SINGLETON, $binding->getScope());
         $binding->prototype();
-        $this->assertEquals(Binding::SCOPE_PROTOTYPE, $binding->getScope());
+        $this->assertEquals(BindingContract::SCOPE_PROTOTYPE, $binding->getScope());
         $binding = new Binding();
         $binding->singleton();
         $this->assertTrue($binding->isSingleton());
-        $this->assertEquals(Binding::SCOPE_SINGLETON, $binding->getScope());
-        $this->expectException(\RuntimeException::class);
-        $binding->singleton();
+        $this->assertEquals(BindingContract::SCOPE_SINGLETON, $binding->getScope());
     }
 
     public function testGetValue()

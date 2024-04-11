@@ -16,7 +16,7 @@ class ResolutionStack
      * @param string $item
      * @throws CircularDependencyException
      */
-    public function append(string $item)
+    public function append(string $item): void
     {
         if ($this->contains($item)) {
             throw new CircularDependencyException($item, $this);
@@ -30,18 +30,18 @@ class ResolutionStack
     }
 
 
-    public function clear()
+    public function clear(): void
     {
         $this->stack = [];
     }
 
-    public function pop()
+    public function pop(): void
     {
         array_pop($this->stack);
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getStack(): array
     {
