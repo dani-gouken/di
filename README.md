@@ -141,15 +141,6 @@ $container->callMethod(Controller::class, 'index');
 use Atom\DI\Container;
 use Atom\DI\Definition;
 
-$container = new Container();
-
-$definition = $container->bind(AuthService::class)
-    ->toNewInstance()
-    ->withClass(
-        UserRepository::class,
-        Definition::newInstanceOf(UserRepository::class)
-            ->withParameter('user', new User(name: "daniel"))
-    );
 
 class UserFactory
 {
