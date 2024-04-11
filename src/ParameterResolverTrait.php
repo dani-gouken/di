@@ -127,6 +127,9 @@ trait ParameterResolverTrait
         if (!$type instanceof ReflectionNamedType) {
             return null;
         }
+        if ($type->isBuiltin()) {
+            return null;
+        }
         return $type->getName();
     }
 }

@@ -39,11 +39,6 @@ class Binding implements BindingContract
         return $this->scope ?? static::SCOPE_SINGLETON;
     }
 
-    private function hasScope(): bool
-    {
-        return $this->scope != null;
-    }
-
     private function setScope(string $scope): Binding
     {
         $this->scope = $scope;

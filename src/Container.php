@@ -59,10 +59,10 @@ class Container implements ContainerInterface, ArrayAccess
     /**
      * @param array<string>|string $aliases
      * @param DefinitionContract|null|mixed $definition
-     * @return Binding |BindingContract
+     * @return Binding
      * @throws MultipleBindingException
      */
-    public function bind($aliases, $definition = null, string $scope = BindingContract::SCOPE_SINGLETON): BindingContract
+    public function bind($aliases, $definition = null, string $scope = BindingContract::SCOPE_SINGLETON): Binding
     {
         if (is_null($definition) && is_string($aliases)) {
             /** @var class-string $aliases **/
